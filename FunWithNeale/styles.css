@@ -1,0 +1,327 @@
+body {
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    font-family: 'Segoe UI', Arial, sans-serif;
+    color: #fff;
+}
+
+.game-container {
+    text-align: center;
+    padding: 20px;
+    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    position: relative;
+}
+
+.game-header {
+    margin-bottom: 20px;
+}
+
+h1 {
+    color: #fff;
+    font-size: 2.5em;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.character-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.level-badge {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 10px 20px;
+    border-radius: 15px;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.title {
+    font-size: 0.8em;
+    color: #FFD700;
+    margin-top: 5px;
+}
+
+.exp-bar {
+    flex-grow: 1;
+    max-width: 300px;
+    height: 20px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    position: relative;
+    overflow: hidden;
+}
+
+.exp-progress {
+    height: 100%;
+    background: linear-gradient(90deg, #4CAF50, #8BC34A);
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+#expText {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    line-height: 20px;
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+canvas {
+    border: 3px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    background-color: rgba(0, 0, 0, 0.4);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+}
+
+.game-stats {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+    font-size: 1.2em;
+}
+
+.score, .lives, .high-score, .stardust {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 10px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.stardust {
+    color: #FFD700;
+}
+
+.special-ability {
+    position: fixed;
+    bottom: 40px;
+    right: 40px;
+    width: 60px;
+    height: 60px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 2px solid rgba(255, 215, 0, 0.3);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.1);
+}
+
+.special-ability:hover {
+    background: rgba(0, 0, 0, 0.4);
+    border-color: rgba(255, 215, 0, 0.5);
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.2);
+}
+
+.ability-icon {
+    font-size: 2em;
+    color: #666; /* Start disabled */
+    transition: color 0.3s ease;
+}
+
+.cooldown-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 50%;
+    pointer-events: none;
+    transition: height 0.1s linear;
+}
+
+.key-hint {
+    position: absolute;
+    bottom: -25px;
+    font-size: 0.8em;
+    white-space: nowrap;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 4px 8px;
+    border-radius: 4px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.menu-button {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.menu-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+}
+
+.modal-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(26, 26, 46, 0.95);
+    padding: 30px;
+    border-radius: 15px;
+    max-width: 800px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.upgrades-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.upgrade-card {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 15px;
+    border-radius: 10px;
+    text-align: left;
+}
+
+.upgrade-card h3 {
+    color: #FFD700;
+    margin: 0 0 10px 0;
+}
+
+.upgrade-level {
+    display: flex;
+    gap: 5px;
+    margin: 10px 0;
+}
+
+.level-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.level-dot.filled {
+    background: #4CAF50;
+}
+
+.story-container {
+    text-align: left;
+}
+
+.story-chapter {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    margin: 10px 0;
+    border-radius: 10px;
+    transition: transform 0.3s;
+}
+
+.story-chapter:hover {
+    transform: translateX(10px);
+}
+
+.story-chapter.locked {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.close-button {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+.game-over {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.9);
+    padding: 30px;
+    border-radius: 15px;
+    text-align: center;
+    z-index: 100;
+}
+
+.game-over h2 {
+    color: #ff4444;
+    font-size: 2em;
+    margin-bottom: 20px;
+}
+
+.stats-summary {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 10px;
+    margin: 20px 0;
+}
+
+.restart-button {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    font-size: 1.2em;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.restart-button:hover {
+    background: #45a049;
+}
+
+.chapter-notification {
+    display: none;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(76, 175, 80, 0.9);
+    padding: 20px;
+    border-radius: 10px;
+    animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+} 
