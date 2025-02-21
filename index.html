@@ -3,90 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fun With Neale: The AI Adventure</title>
+    <title>Junior Researcher Game</title>
     <link rel="stylesheet" href="styles.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
     <div class="game-container">
-        <div id="background-canvas"></div>
         <div class="game-header">
-            <h1 class="three-d-text">Fun With Neale</h1>
-            <div class="subtitle">The AI Adventure</div>
-            <div class="character-info">
-                <div class="level-badge">
-                    Level <span id="levelValue">1</span>
-                    <div class="title" id="playerTitle">Junior Researcher</div>
-                </div>
-                <div class="exp-bar">
-                    <div id="expProgress" class="exp-progress"></div>
-                    <span id="expText">EXP: 0/100</span>
-                </div>
+            <h1 class="three-d-text">Junior Researcher</h1>
+            <p class="subtitle">Explore the Digital Frontier</p>
+        </div>
+
+        <div class="character-info">
+            <div class="level-badge">
+                <span>Level 1</span>
+                <div class="title">Junior Researcher</div>
+            </div>
+            <div class="exp-bar">
+                <div class="exp-progress"></div>
+                <span id="expText">0/100 XP</span>
             </div>
         </div>
 
         <div class="game-area">
-            <canvas id="gameCanvas" width="800" height="600"></canvas>
-            <div class="game-stats">
-                <div class="score">Score: <span id="scoreValue">0</span></div>
-                <div class="lives">Lives: <span id="livesValue">3</span>❤️</div>
-                <div class="data-points">Data Points: <span id="stardustValue">0</span>💾</div>
-                <div class="high-score">High Score: <span id="highScoreValue">0</span></div>
-            </div>
+            <canvas id="gameCanvas"></canvas>
+        </div>
+
+        <div class="game-stats">
+            <div class="lives">❤️ Lives: <span id="livesValue">3</span></div>
+            <div class="score">Score: <span id="scoreValue">0</span></div>
+            <div class="data-points">💾 Data Points: <span id="dataPoints">0</span></div>
         </div>
 
         <div class="controls-hint">
-            <div class="key">←→</div>
-            <span>Move</span>
-            <div class="key">SPACE</div>
-            <span>Jump</span>
+            <div><span class="key">←</span> <span class="key">→</span> Move</div>
+            <div><span class="key">Space</span> Jump</div>
+            <div><span class="key">U</span> Upgrades</div>
         </div>
-
-        <button id="upgradeButton" class="menu-button">Research Upgrades</button>
-        <button id="loreButton" class="menu-button">Research Log</button>
     </div>
 
-    <!-- Upgrade Menu -->
-    <div id="upgradeMenu" class="modal">
+    <!-- Game Over Modal -->
+    <div id="gameOver" class="modal">
         <div class="modal-content">
-            <h2>Research Upgrades</h2>
-            <div class="upgrades-container" id="upgradesContainer">
-                <!-- Upgrades will be populated by JavaScript -->
+            <h2>Research Paused!</h2>
+            <div class="stats-summary">
+                <p>Final Score: <span id="finalScore">0</span></p>
+                <p>Data Points Collected: <span id="dataCollected">0</span></p>
+                <p>Research Progress: <span id="researchProgress">0</span></p>
             </div>
-            <button class="close-button">Close</button>
+            <button class="restart-button" onclick="restartGame()">Continue Research</button>
         </div>
     </div>
 
-    <!-- Story/Lore Menu -->
-    <div id="loreMenu" class="modal">
-        <div class="modal-content">
-            <h2>AI Research Progress</h2>
-            <div class="story-container" id="storyContainer">
-                <!-- Story chapters will be populated by JavaScript -->
-            </div>
-            <button class="close-button">Close</button>
-        </div>
-    </div>
-
-    <!-- Game Over Screen -->
-    <div id="gameOver" class="game-over">
-        <h2>Research Paused!</h2>
-        <div class="stats-summary">
-            <p>Research Score: <span id="finalScore">0</span></p>
-            <p>Data Points Collected: <span id="starsCollected">0</span></p>
-            <p>Insights Gained: <span id="stardustEarned">0</span>💾</p>
-            <p>Best Performance: <span id="endHighScore">0</span></p>
-        </div>
-        <button class="restart-button" onclick="restartGame()">Continue Research</button>
-    </div>
-
-    <!-- Level Complete Notification -->
+    <!-- Chapter Notification -->
     <div id="chapterNotification" class="chapter-notification">
         <h3>New Research Milestone!</h3>
         <p id="chapterTitle"></p>
     </div>
 
+    <!-- Load game data first -->
     <script src="gameData.js"></script>
+    <!-- Then load the main game -->
     <script src="game.js"></script>
 </body>
 </html> 

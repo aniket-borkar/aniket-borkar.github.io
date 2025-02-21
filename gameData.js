@@ -1,3 +1,174 @@
+// Game story and dialogue
+const storyDialogue = {
+    intro: {
+        title: "The Beginning",
+        text: "In the digital realm of AI research, Neale embarks on a journey to understand the depths of artificial consciousness. Each scroll contains valuable research data...",
+        trigger: "start"
+    },
+    levels: [
+        {
+            id: 1,
+            intro: "Welcome to the Training Ground. Here, you'll learn the basics of data collection and movement.",
+            completion: "Well done! You've mastered the basics. The real research begins now."
+        },
+        {
+            id: 2,
+            intro: "The Temple Gardens hold ancient wisdom about neural networks. Each scroll reveals new patterns.",
+            completion: "Fascinating! The scrolls suggest a connection between consciousness and emergent behavior."
+        },
+        {
+            id: 3,
+            name: "Digital Caverns",
+            intro: "Deep in the digital caverns, breakthrough algorithms await discovery.",
+            completion: "These findings could revolutionize our understanding of AI consciousness!"
+        },
+        {
+            id: 4,
+            name: "Quantum Peaks",
+            intro: "At these heights, quantum computing principles merge with neural architecture.",
+            completion: "The quantum patterns in these scrolls... they're unlike anything we've seen before."
+        },
+        {
+            id: 5,
+            name: "Ethics Valley",
+            intro: "Here we must balance progress with responsibility. The scrolls contain crucial ethical guidelines.",
+            completion: "With great power comes great responsibility. These ethical principles will guide our research."
+        }
+    ]
+};
+
+// Upgrade system
+const upgrades = {
+    jumpPower: {
+        name: "Enhanced Jump",
+        levels: [
+            { cost: 300, power: -20, description: "Increase jump height by 10%" },
+            { cost: 600, power: -22, description: "Increase jump height by 20%" },
+            { cost: 1000, power: -24, description: "Increase jump height by 30%" }
+        ],
+        currentLevel: 0
+    },
+    speed: {
+        name: "Movement Speed",
+        levels: [
+            { cost: 200, speed: 6, description: "Increase movement speed by 20%" },
+            { cost: 400, speed: 7, description: "Increase movement speed by 40%" },
+            { cost: 800, speed: 8, description: "Increase movement speed by 60%" }
+        ],
+        currentLevel: 0
+    },
+    doubleJump: {
+        name: "Double Jump",
+        levels: [
+            { cost: 1000, description: "Unlock the ability to jump again in mid-air" }
+        ],
+        currentLevel: 0,
+        unlocked: false
+    }
+};
+
+// Extended level definitions
+const gameLevels = [
+    {
+        id: 1,
+        name: "Training Ground",
+        platforms: [
+            { x: 0, y: 580, width: 800, height: 20, type: 'ground' },
+            { x: 200, y: 450, width: 100, height: 20, type: 'platform' },
+            { x: 400, y: 380, width: 100, height: 20, type: 'platform' },
+            { x: 600, y: 450, width: 100, height: 20, type: 'platform' }
+        ],
+        collectibles: [
+            { x: 250, y: 400, type: 'scroll', collected: false },
+            { x: 450, y: 330, type: 'scroll', collected: false },
+            { x: 650, y: 400, type: 'scroll', collected: false }
+        ],
+        background: '#1a1a2e'
+    },
+    {
+        id: 2,
+        name: "Temple Gardens",
+        platforms: [
+            { x: 0, y: 580, width: 800, height: 20, type: 'ground' },
+            { x: 100, y: 480, width: 100, height: 20, type: 'platform' },
+            { x: 300, y: 420, width: 100, height: 20, type: 'platform' },
+            { x: 500, y: 360, width: 100, height: 20, type: 'platform' },
+            { x: 700, y: 300, width: 100, height: 20, type: 'platform' }
+        ],
+        collectibles: [
+            { x: 150, y: 430, type: 'scroll', collected: false },
+            { x: 350, y: 370, type: 'scroll', collected: false },
+            { x: 550, y: 310, type: 'scroll', collected: false },
+            { x: 750, y: 250, type: 'scroll', collected: false }
+        ],
+        background: '#1a2d3e'
+    },
+    {
+        id: 3,
+        name: "Digital Caverns",
+        platforms: [
+            { x: 0, y: 580, width: 800, height: 20, type: 'ground' },
+            { x: 150, y: 500, width: 80, height: 20, type: 'platform' },
+            { x: 350, y: 450, width: 80, height: 20, type: 'platform' },
+            { x: 200, y: 350, width: 80, height: 20, type: 'platform' },
+            { x: 400, y: 300, width: 80, height: 20, type: 'platform' },
+            { x: 600, y: 250, width: 80, height: 20, type: 'platform' }
+        ],
+        collectibles: [
+            { x: 180, y: 450, type: 'scroll', collected: false },
+            { x: 380, y: 400, type: 'scroll', collected: false },
+            { x: 230, y: 300, type: 'scroll', collected: false },
+            { x: 430, y: 250, type: 'scroll', collected: false },
+            { x: 630, y: 200, type: 'scroll', collected: false }
+        ],
+        background: '#141452'
+    },
+    {
+        id: 4,
+        name: "Quantum Peaks",
+        platforms: [
+            { x: 0, y: 580, width: 800, height: 20, type: 'ground' },
+            { x: 100, y: 500, width: 60, height: 20, type: 'platform' },
+            { x: 300, y: 450, width: 60, height: 20, type: 'platform' },
+            { x: 500, y: 400, width: 60, height: 20, type: 'platform' },
+            { x: 400, y: 300, width: 60, height: 20, type: 'platform' },
+            { x: 200, y: 250, width: 60, height: 20, type: 'platform' },
+            { x: 350, y: 180, width: 60, height: 20, type: 'platform' }
+        ],
+        collectibles: [
+            { x: 120, y: 450, type: 'scroll', collected: false },
+            { x: 320, y: 400, type: 'scroll', collected: false },
+            { x: 520, y: 350, type: 'scroll', collected: false },
+            { x: 420, y: 250, type: 'scroll', collected: false },
+            { x: 220, y: 200, type: 'scroll', collected: false },
+            { x: 370, y: 130, type: 'scroll', collected: false }
+        ],
+        background: '#1a0a2e'
+    },
+    {
+        id: 5,
+        name: "Ethics Valley",
+        platforms: [
+            { x: 0, y: 580, width: 800, height: 20, type: 'ground' },
+            { x: 700, y: 500, width: 100, height: 20, type: 'platform' },
+            { x: 500, y: 450, width: 100, height: 20, type: 'platform' },
+            { x: 300, y: 400, width: 100, height: 20, type: 'platform' },
+            { x: 100, y: 350, width: 100, height: 20, type: 'platform' },
+            { x: 250, y: 250, width: 100, height: 20, type: 'platform' },
+            { x: 450, y: 200, width: 100, height: 20, type: 'platform' }
+        ],
+        collectibles: [
+            { x: 750, y: 450, type: 'scroll', collected: false },
+            { x: 550, y: 400, type: 'scroll', collected: false },
+            { x: 350, y: 350, type: 'scroll', collected: false },
+            { x: 150, y: 300, type: 'scroll', collected: false },
+            { x: 300, y: 200, type: 'scroll', collected: false },
+            { x: 500, y: 150, type: 'scroll', collected: false }
+        ],
+        background: '#2a1a3e'
+    }
+];
+
 // Game story and lore
 const gameLore = {
     title: "Fun With Neale: The AI Adventure",
@@ -32,42 +203,6 @@ const progression = {
         { level: 4, expRequired: 600, title: "AI Pioneer" },
         { level: 5, expRequired: 1000, title: "Digital Visionary" }
     ]
-};
-
-// Available upgrades
-const upgrades = {
-    speed: {
-        name: "Swift Steps",
-        levels: [
-            { level: 1, cost: 50, multiplier: 1.2, description: "Increase movement speed by 20%" },
-            { level: 2, cost: 100, multiplier: 1.4, description: "Increase movement speed by 40%" },
-            { level: 3, cost: 200, multiplier: 1.6, description: "Increase movement speed by 60%" }
-        ]
-    },
-    collection: {
-        name: "Star Magnetism",
-        levels: [
-            { level: 1, cost: 75, radius: 1.2, description: "Increase star collection radius by 20%" },
-            { level: 2, cost: 150, radius: 1.4, description: "Increase star collection radius by 40%" },
-            { level: 3, cost: 300, radius: 1.6, description: "Increase star collection radius by 60%" }
-        ]
-    },
-    lives: {
-        name: "Celestial Vitality",
-        levels: [
-            { level: 1, cost: 100, bonus: 1, description: "Gain +1 extra life" },
-            { level: 2, cost: 200, bonus: 2, description: "Gain +2 extra lives" },
-            { level: 3, cost: 400, bonus: 3, description: "Gain +3 extra lives" }
-        ]
-    },
-    special: {
-        name: "Star Burst",
-        levels: [
-            { level: 1, cost: 150, cooldown: 30, description: "Unleash a burst of energy that collects all stars on screen" },
-            { level: 2, cost: 300, cooldown: 20, description: "Reduced cooldown and increased range" },
-            { level: 3, cost: 600, cooldown: 10, description: "Maximum power and minimum cooldown" }
-        ]
-    }
 };
 
 // Visual effects for different star types
