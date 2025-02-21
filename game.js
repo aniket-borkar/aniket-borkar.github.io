@@ -9,9 +9,12 @@ let level = 1;
 let stardust = 0;
 let highScore = localStorage.getItem('highScore') || 0;
 let gameActive = true;
-let gameSpeed = 1;
-let lastSpawnTime = 0;
-const spawnInterval = 1500; // Time between star spawns in milliseconds
+let currentLevel = 0;
+
+// Physics constants
+const GRAVITY = 0.5;
+const JUMP_FORCE = -12;
+const MOVE_SPEED = 5;
 
 // Upgrade levels
 const playerUpgrades = {
@@ -30,12 +33,16 @@ const SPECIAL_ABILITY_COOLDOWN = 30000; // 30 seconds
 const neale = {
     x: canvas.width / 2,
     y: canvas.height - 80,
-    width: 40,
+    width: 50,
     height: 80,
-    baseSpeed: 8,
-    color: '#FF6B6B',
-    collectionRadius: 0,
-    trail: []
+    velocityX: 0,
+    velocityY: 0,
+    isJumping: false,
+    facingRight: true,
+    frame: 0,
+    frameCount: 8,
+    animationSpeed: 0.15,
+    animationTimer: 0
 };
 
 // Visual settings
@@ -50,9 +57,30 @@ const fallingObjects = [];
 const scorePopups = [];
 const visualEffects = [];
 
-// Initialize UI
-document.getElementById('highScoreValue').textContent = highScore;
-updatePlayerStats();
+// Level design
+const levels = [
+    {
+        name: "Research Lab",
+        platforms: [
+            { x: 100, y: canvas.height - 100, width: 200, height: 20 },
+            { x: 400, y: canvas.height - 150, width: 200, height: 20 },
+            { x: 700, y: canvas.height - 200, width: 200, height: 20 }
+        ],
+        collectibles: [
+            { x: 150, y: canvas.height - 150, collected: false },
+            { x: 450, y: canvas.height - 200, collected: false },
+            { x: 750, y: canvas.height - 250, collected: false }
+        ],
+        background: {
+            color: '#1a1a2e',
+            elements: [
+                { type: 'computer', x: 200, y: canvas.height - 180 },
+                { type: 'server', x: 600, y: canvas.height - 230 }
+            ]
+        }
+    },
+    // Add more levels here
+];
 
 // Game controls
 const keys = {
@@ -64,10 +92,15 @@ const keys = {
 function handleKeyDown(e) {
     if (e.code === 'Space') {
         e.preventDefault();
-        activateSpecialAbility();
-    } else if (e.code === 'ArrowLeft' || e.code === 'ArrowRight') {
+        if (!neale.isJumping) {
+            neale.velocityY = JUMP_FORCE;
+            neale.isJumping = true;
+        }
+    }
+    if (e.code === 'ArrowLeft' || e.code === 'ArrowRight') {
         e.preventDefault();
         keys[e.code] = true;
+        neale.facingRight = e.code === 'ArrowRight';
     }
 }
 
@@ -205,52 +238,86 @@ function update(currentTime) {
         }
     }
 
-    // Spawn new objects based on time
-    if (currentTime - lastSpawnTime > spawnInterval / gameSpeed) {
-        createFallingObject();
-        lastSpawnTime = currentTime;
+    // Update player physics
+    if (keys.ArrowLeft) {
+        neale.velocityX = -MOVE_SPEED;
+        neale.animationTimer += neale.animationSpeed;
+    } else if (keys.ArrowRight) {
+        neale.velocityX = MOVE_SPEED;
+        neale.animationTimer += neale.animationSpeed;
+    } else {
+        neale.velocityX = 0;
+        neale.animationTimer = 0;
+        neale.frame = 0;
     }
 
-    // Calculate player speed with upgrades
-    const playerSpeed = neale.baseSpeed * (1 + (playerUpgrades.speed * 0.2));
-
-    // Move Neale
-    if (keys.ArrowLeft && neale.x > 0) {
-        neale.x -= playerSpeed;
-    }
-    if (keys.ArrowRight && neale.x < canvas.width - neale.width) {
-        neale.x += playerSpeed;
+    // Update animation frame
+    if (neale.animationTimer >= 1) {
+        neale.frame = (neale.frame + 1) % neale.frameCount;
+        neale.animationTimer = 0;
     }
 
-    // Update falling objects
-    for (let i = fallingObjects.length - 1; i >= 0; i--) {
-        const object = fallingObjects[i];
-        object.y += object.speed;
+    // Apply gravity
+    neale.velocityY += GRAVITY;
 
-        // Check collision with expanded collection radius
-        const collectionRadius = playerUpgrades.collection * 20; // 20 pixels per upgrade level
-        if (checkCollision(neale, object, collectionRadius)) {
-            collectStar(object);
-            fallingObjects.splice(i, 1);
-            continue;
+    // Update position
+    neale.x += neale.velocityX;
+    neale.y += neale.velocityY;
+
+    // Check platform collisions
+    let onPlatform = false;
+    levels[currentLevel].platforms.forEach(platform => {
+        if (checkPlatformCollision(neale, platform)) {
+            onPlatform = true;
+            neale.isJumping = false;
+            neale.y = platform.y - neale.height;
+            neale.velocityY = 0;
         }
+    });
 
-        // Remove objects that fall off screen and reduce lives
-        if (object.y > canvas.height) {
-            lives--;
-            document.getElementById('livesValue').textContent = lives;
-            fallingObjects.splice(i, 1);
-            
-            createScorePopup(object.x, canvas.height - 30, '-1 ❤️', '#ff4444');
+    // Check collectibles
+    levels[currentLevel].collectibles.forEach(collectible => {
+        if (!collectible.collected && checkCollision(neale, {
+            x: collectible.x,
+            y: collectible.y,
+            width: 20,
+            height: 20
+        })) {
+            collectible.collected = true;
+            score += 10;
+            exp += 1;
+            updatePlayerStats();
+        }
+    });
 
-            if (lives <= 0) {
-                gameOver();
-            }
+    // Screen boundaries
+    if (neale.x < 0) neale.x = 0;
+    if (neale.x > canvas.width - neale.width) neale.x = canvas.width - neale.width;
+    if (neale.y > canvas.height) {
+        lives--;
+        if (lives <= 0) {
+            gameOver();
+        } else {
+            resetLevel();
         }
     }
 
     updateScorePopups();
     updateVisualEffects();
+}
+
+function checkPlatformCollision(player, platform) {
+    return player.x < platform.x + platform.width &&
+           player.x + player.width > platform.x &&
+           player.y + player.height > platform.y &&
+           player.y + player.height < platform.y + platform.height + 10;
+}
+
+function resetLevel() {
+    neale.x = canvas.width / 2;
+    neale.y = canvas.height - 80;
+    neale.velocityX = 0;
+    neale.velocityY = 0;
 }
 
 function collectStar(star) {
@@ -463,195 +530,144 @@ function restartGame() {
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Draw visual effects behind everything
-    drawVisualEffects();
+    // Draw background
+    drawBackground();
+    
+    // Draw platforms
+    levels[currentLevel].platforms.forEach(platform => {
+        drawPlatform(platform);
+    });
+
+    // Draw collectibles
+    levels[currentLevel].collectibles.forEach(collectible => {
+        if (!collectible.collected) {
+            drawCollectible(collectible);
+        }
+    });
 
     // Draw Neale
-    drawNeale(neale.x, neale.y);
-
-    // Draw collection radius if upgraded
-    if (playerUpgrades.collection > 0) {
-        const radius = playerUpgrades.collection * 20;
-        ctx.beginPath();
-        ctx.arc(neale.x + neale.width/2, neale.y + neale.height/2, radius, 0, Math.PI * 2);
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
-        ctx.stroke();
-    }
-
-    // Draw falling objects
-    fallingObjects.forEach(object => {
-        ctx.save();
-        ctx.translate(object.x + object.width/2, object.y + object.height/2);
-        object.rotation += object.rotationSpeed;
-        ctx.rotate(object.rotation);
-        drawStar(0, 0, 5, object.width/2, object.width/4, object.color);
-        if (object.effect === 'glow') {
-            drawStarGlow(0, 0, object.width/2 + 5, object.color);
-        }
-        ctx.restore();
-    });
-
-    // Draw score popups
-    drawScorePopups();
+    drawNeale3D(neale.x, neale.y);
 }
 
-function drawVisualEffects() {
-    visualEffects.forEach(effect => {
-        ctx.save();
-        ctx.globalAlpha = effect.alpha;
-        
-        switch(effect.type) {
-            case 'starburst':
-                ctx.beginPath();
-                ctx.arc(effect.x, effect.y, effect.radius, 0, Math.PI * 2);
-                ctx.strokeStyle = '#FFD700';
-                ctx.lineWidth = 2;
-                ctx.stroke();
-                break;
-                
-            case 'sparkle':
-                ctx.translate(effect.x, effect.y);
-                ctx.rotate(effect.rotation);
-                drawStar(0, 0, 5, effect.size, effect.size/2, '#FFD700');
-                break;
-        }
-        
-        ctx.restore();
-    });
-}
-
-function drawStarGlow(cx, cy, radius, color) {
-    const gradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
-    gradient.addColorStop(0, color);
-    gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+function drawBackground() {
+    // Create gradient background
+    const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+    gradient.addColorStop(0, '#1a1a2e');
+    gradient.addColorStop(1, '#16213e');
     ctx.fillStyle = gradient;
-    ctx.beginPath();
-    ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-    ctx.fill();
-}
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-// Score popup system
-function createScorePopup(x, y, text, color = '#FFD700') {
-    scorePopups.push({
-        x,
-        y,
-        text,
-        color,
-        alpha: 1,
-        life: 60
+    // Draw background elements
+    levels[currentLevel].background.elements.forEach(element => {
+        drawBackgroundElement(element);
     });
-}
 
-function updateScorePopups() {
-    for (let i = scorePopups.length - 1; i >= 0; i--) {
-        const popup = scorePopups[i];
-        popup.y -= 1;
-        popup.alpha -= 1/60;
-        if (popup.alpha <= 0) {
-            scorePopups.splice(i, 1);
-        }
-    }
-}
-
-function drawScorePopups() {
-    scorePopups.forEach(popup => {
-        ctx.save();
-        ctx.globalAlpha = popup.alpha;
-        ctx.font = '20px Arial';
-        ctx.fillStyle = popup.color;
-        ctx.textAlign = 'center';
-        ctx.fillText(popup.text, popup.x, popup.y);
-        ctx.restore();
-    });
-}
-
-// Function to draw Neale as a humanoid
-function drawNeale(x, y) {
-    // Update trail
-    neale.trail.push({ x: x + neale.width/2, y: y + neale.height/2 });
-    if (neale.trail.length > VISUAL_SETTINGS.trailLength) {
-        neale.trail.shift();
-    }
-
-    // Draw trail
-    if (neale.trail.length > 1) {
+    // Add some parallax effect
+    for (let i = 0; i < 50; i++) {
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
         ctx.beginPath();
-        ctx.moveTo(neale.trail[0].x, neale.trail[0].y);
-        for (let i = 1; i < neale.trail.length; i++) {
-            ctx.lineTo(neale.trail[i].x, neale.trail[i].y);
-        }
-        ctx.strokeStyle = 'rgba(255, 107, 107, 0.3)';
-        ctx.lineWidth = 10;
-        ctx.lineCap = 'round';
-        ctx.lineJoin = 'round';
-        ctx.stroke();
+        ctx.arc(
+            Math.sin(Date.now() * 0.001 + i) * canvas.width/2 + canvas.width/2,
+            Math.cos(Date.now() * 0.001 + i) * canvas.height/2 + canvas.height/2,
+            1,
+            0,
+            Math.PI * 2
+        );
+        ctx.fill();
     }
+}
 
+function drawPlatform(platform) {
+    // Create 3D effect for platforms
+    ctx.fillStyle = '#4CAF50';
+    ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
+    
+    // Platform top highlight
+    ctx.fillStyle = '#8BC34A';
+    ctx.fillRect(platform.x, platform.y, platform.width, 5);
+    
+    // Platform side shadow
+    ctx.fillStyle = '#2E7D32';
+    ctx.fillRect(platform.x, platform.y + 5, platform.width, 2);
+}
+
+function drawCollectible(collectible) {
+    const time = Date.now() * 0.003;
+    const hoverOffset = Math.sin(time) * 5;
+    
     // Glow effect
-    const glow = ctx.createRadialGradient(
-        x + neale.width/2, y + 40,
-        0,
-        x + neale.width/2, y + 40,
-        80
+    ctx.beginPath();
+    ctx.arc(collectible.x + 10, collectible.y + 10 + hoverOffset, 15, 0, Math.PI * 2);
+    const gradient = ctx.createRadialGradient(
+        collectible.x + 10, collectible.y + 10 + hoverOffset, 0,
+        collectible.x + 10, collectible.y + 10 + hoverOffset, 15
     );
-    glow.addColorStop(0, 'rgba(255, 215, 0, 0.2)');
-    glow.addColorStop(1, 'rgba(255, 215, 0, 0)');
-    ctx.fillStyle = glow;
-    ctx.fillRect(x - 20, y - 20, neale.width + 40, neale.height + 40);
-
-    // Head with glow
-    ctx.shadowColor = '#FFD700';
-    ctx.shadowBlur = 15;
-    ctx.fillStyle = '#FFD700';
-    ctx.beginPath();
-    ctx.arc(x + neale.width/2, y + 15, 15, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Reset shadow
-    ctx.shadowBlur = 0;
-
-    // Body with gradient
-    const bodyGradient = ctx.createLinearGradient(x + 10, y + 30, x + 30, y + 60);
-    bodyGradient.addColorStop(0, '#FF6B6B');
-    bodyGradient.addColorStop(1, '#FF4444');
-    ctx.fillStyle = bodyGradient;
-    ctx.fillRect(x + 10, y + 30, 20, 30);
-
-    // Legs with gradient
-    ctx.fillRect(x + 10, y + 60, 8, 20);
-    ctx.fillRect(x + 22, y + 60, 8, 20);
-
-    // Arms with gradient
-    ctx.fillRect(x, y + 35, 10, 8);
-    ctx.fillRect(x + 30, y + 35, 10, 8);
-
-    // Face
-    ctx.fillStyle = 'black';
-    // Eyes with shine
-    ctx.beginPath();
-    ctx.arc(x + neale.width/2 - 5, y + 15, 2, 0, Math.PI * 2);
-    ctx.arc(x + neale.width/2 + 5, y + 15, 2, 0, Math.PI * 2);
+    gradient.addColorStop(0, 'rgba(255, 215, 0, 0.6)');
+    gradient.addColorStop(1, 'rgba(255, 215, 0, 0)');
+    ctx.fillStyle = gradient;
     ctx.fill();
     
-    // Add eye shine
-    ctx.fillStyle = 'white';
-    ctx.beginPath();
-    ctx.arc(x + neale.width/2 - 6, y + 14, 1, 0, Math.PI * 2);
-    ctx.arc(x + neale.width/2 + 4, y + 14, 1, 0, Math.PI * 2);
-    ctx.fill();
+    // Draw the collectible
+    drawStar(collectible.x + 10, collectible.y + 10 + hoverOffset, 5, 10, 5, '#FFD700');
+}
 
-    // Smile with gradient
-    const smileGradient = ctx.createLinearGradient(
-        x + neale.width/2 - 8, y + 15,
-        x + neale.width/2 + 8, y + 15
-    );
-    smileGradient.addColorStop(0, '#333');
-    smileGradient.addColorStop(1, '#000');
-    ctx.strokeStyle = smileGradient;
-    ctx.lineWidth = 2;
+function drawNeale3D(x, y) {
+    ctx.save();
+    ctx.translate(x + neale.width/2, y + neale.height/2);
+    if (!neale.facingRight) {
+        ctx.scale(-1, 1);
+    }
+    ctx.translate(-neale.width/2, -neale.height/2);
+
+    // Body
+    const bodyGradient = ctx.createLinearGradient(0, 0, neale.width, neale.height);
+    bodyGradient.addColorStop(0, '#4CAF50');
+    bodyGradient.addColorStop(1, '#2E7D32');
+    
+    // Legs animation
+    const legOffset = Math.sin(neale.frame * 0.5) * 10;
+    
+    // Draw legs with animation
+    ctx.fillStyle = bodyGradient;
+    ctx.fillRect(10, 40 + Math.abs(legOffset), 10, 40);
+    ctx.fillRect(30, 40 - Math.abs(legOffset), 10, 40);
+    
+    // Draw body with 3D effect
+    ctx.fillStyle = bodyGradient;
     ctx.beginPath();
-    ctx.arc(x + neale.width/2, y + 15, 8, 0, Math.PI, false);
+    ctx.moveTo(10, 20);
+    ctx.lineTo(40, 20);
+    ctx.lineTo(45, 60);
+    ctx.lineTo(5, 60);
+    ctx.closePath();
+    ctx.fill();
+    
+    // Head with 3D effect
+    const headGradient = ctx.createRadialGradient(25, 15, 0, 25, 15, 15);
+    headGradient.addColorStop(0, '#FFD700');
+    headGradient.addColorStop(1, '#FFA000');
+    ctx.fillStyle = headGradient;
+    ctx.beginPath();
+    ctx.arc(25, 15, 15, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Face features
+    ctx.fillStyle = '#000';
+    // Eyes
+    ctx.fillRect(20, 10, 4, 4);
+    ctx.fillRect(30, 10, 4, 4);
+    // Mouth
+    ctx.beginPath();
+    ctx.arc(25, 20, 5, 0, Math.PI, false);
     ctx.stroke();
+    
+    // Arms with animation
+    const armOffset = Math.cos(neale.frame * 0.5) * 10;
+    ctx.fillStyle = bodyGradient;
+    ctx.fillRect(0, 25 + armOffset, 15, 8);
+    ctx.fillRect(35, 25 - armOffset, 15, 8);
+
+    ctx.restore();
 }
 
 // Function to draw a star with enhanced effects
@@ -814,16 +830,11 @@ function initGame() {
     exp = 0;
     level = 1;
     stardust = 0;
-    gameSpeed = 1;
+    currentLevel = 0;
     gameActive = true;
     
-    // Reset arrays
-    fallingObjects.length = 0;
-    scorePopups.length = 0;
-    visualEffects.length = 0;
-    
     // Reset player position
-    neale.x = canvas.width / 2;
+    resetLevel();
     
     // Update UI
     updatePlayerStats();
@@ -838,7 +849,6 @@ function initGame() {
     });
     
     // Start game loop
-    lastSpawnTime = performance.now();
     requestAnimationFrame(gameLoop);
 }
 

@@ -149,13 +149,22 @@ canvas:hover {
     justify-content: space-around;
     margin-top: 20px;
     font-size: 1.2em;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 15px;
+    border-radius: 10px;
+    transform: translateZ(20px);
 }
 
-.score, .lives, .high-score, .stardust {
+.score, .lives, .high-score, .data-points {
     background: rgba(255, 255, 255, 0.1);
     padding: 10px 20px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
+}
+
+.score:hover, .lives:hover, .high-score:hover, .data-points:hover {
+    transform: translateY(-5px);
 }
 
 .stardust {
@@ -386,4 +395,40 @@ canvas:hover {
         transform: translateX(0);
         opacity: 1;
     }
+}
+
+.controls-hint {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin: 20px 0;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 10px 20px;
+    border-radius: 10px;
+}
+
+.key {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-family: monospace;
+    font-size: 1.2em;
+    color: #FFD700;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.data-points {
+    color: #4CAF50;
+    font-weight: bold;
+}
+
+.lives {
+    color: #ff4444;
+}
+
+.game-area {
+    position: relative;
+    margin: 20px 0;
+    perspective: 1000px;
 } 

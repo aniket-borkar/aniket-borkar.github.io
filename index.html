@@ -16,7 +16,7 @@
             <div class="character-info">
                 <div class="level-badge">
                     Level <span id="levelValue">1</span>
-                    <div class="title" id="playerTitle">Novice Guardian</div>
+                    <div class="title" id="playerTitle">Junior Researcher</div>
                 </div>
                 <div class="exp-bar">
                     <div id="expProgress" class="exp-progress"></div>
@@ -29,26 +29,27 @@
             <canvas id="gameCanvas" width="800" height="600"></canvas>
             <div class="game-stats">
                 <div class="score">Score: <span id="scoreValue">0</span></div>
-                <div class="lives">Lives: <span id="livesValue">3</span></div>
-                <div class="stardust">Stardust: <span id="stardustValue">0</span>✨</div>
+                <div class="lives">Lives: <span id="livesValue">3</span>❤️</div>
+                <div class="data-points">Data Points: <span id="stardustValue">0</span>💾</div>
                 <div class="high-score">High Score: <span id="highScoreValue">0</span></div>
             </div>
         </div>
 
-        <div class="special-ability" id="specialAbility">
-            <div class="ability-icon">★</div>
-            <div class="cooldown-overlay"></div>
-            <span class="key-hint">Press SPACE</span>
+        <div class="controls-hint">
+            <div class="key">←→</div>
+            <span>Move</span>
+            <div class="key">SPACE</div>
+            <span>Jump</span>
         </div>
 
-        <button id="upgradeButton" class="menu-button">Upgrades</button>
-        <button id="loreButton" class="menu-button">Story</button>
+        <button id="upgradeButton" class="menu-button">Research Upgrades</button>
+        <button id="loreButton" class="menu-button">Research Log</button>
     </div>
 
     <!-- Upgrade Menu -->
     <div id="upgradeMenu" class="modal">
         <div class="modal-content">
-            <h2>Star Guardian Upgrades</h2>
+            <h2>Research Upgrades</h2>
             <div class="upgrades-container" id="upgradesContainer">
                 <!-- Upgrades will be populated by JavaScript -->
             </div>
@@ -59,7 +60,7 @@
     <!-- Story/Lore Menu -->
     <div id="loreMenu" class="modal">
         <div class="modal-content">
-            <h2>The Chronicles of Aethoria</h2>
+            <h2>AI Research Progress</h2>
             <div class="story-container" id="storyContainer">
                 <!-- Story chapters will be populated by JavaScript -->
             </div>
@@ -69,19 +70,19 @@
 
     <!-- Game Over Screen -->
     <div id="gameOver" class="game-over">
-        <h2>Game Over!</h2>
+        <h2>Research Paused!</h2>
         <div class="stats-summary">
-            <p>Final Score: <span id="finalScore">0</span></p>
-            <p>Stars Collected: <span id="starsCollected">0</span></p>
-            <p>Stardust Earned: <span id="stardustEarned">0</span>✨</p>
-            <p>High Score: <span id="endHighScore">0</span></p>
+            <p>Research Score: <span id="finalScore">0</span></p>
+            <p>Data Points Collected: <span id="starsCollected">0</span></p>
+            <p>Insights Gained: <span id="stardustEarned">0</span>💾</p>
+            <p>Best Performance: <span id="endHighScore">0</span></p>
         </div>
-        <button class="restart-button" onclick="restartGame()">Continue Journey</button>
+        <button class="restart-button" onclick="restartGame()">Continue Research</button>
     </div>
 
-    <!-- New Chapter Notification -->
+    <!-- Level Complete Notification -->
     <div id="chapterNotification" class="chapter-notification">
-        <h3>New Chapter Unlocked!</h3>
+        <h3>New Research Milestone!</h3>
         <p id="chapterTitle"></p>
     </div>
 
