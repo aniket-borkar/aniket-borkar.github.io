@@ -227,4 +227,114 @@ const starTypes = {
         probability: 0.1,
         effect: 'glow'
     }
-}; 
+};
+
+// Enemy types and configurations
+const enemies = {
+    drone: {
+        name: "Security Drone",
+        width: 40,
+        height: 40,
+        speed: 2,
+        health: 2,
+        damage: 1,
+        points: 50,
+        behavior: 'patrol',
+        sprite: {
+            frameCount: 4,
+            animationSpeed: 0.1
+        }
+    },
+    virus: {
+        name: "Digital Virus",
+        width: 30,
+        height: 30,
+        speed: 3,
+        health: 1,
+        damage: 1,
+        points: 30,
+        behavior: 'chase',
+        sprite: {
+            frameCount: 4,
+            animationSpeed: 0.15
+        }
+    },
+    firewall: {
+        name: "Firewall Guardian",
+        width: 50,
+        height: 60,
+        speed: 1,
+        health: 4,
+        damage: 2,
+        points: 100,
+        behavior: 'stationary',
+        sprite: {
+            frameCount: 6,
+            animationSpeed: 0.08
+        }
+    }
+};
+
+// Katana combat configuration
+const combat = {
+    katana: {
+        damage: 1,
+        range: 60,
+        attackSpeed: 0.5,
+        animations: {
+            slash: {
+                frameCount: 6,
+                duration: 300,
+                hitFrame: 3
+            },
+            special: {
+                frameCount: 8,
+                duration: 500,
+                hitFrame: 4,
+                cooldown: 2000
+            }
+        }
+    }
+};
+
+// Update level definitions to include enemies
+gameLevels.forEach(level => {
+    level.enemies = [];
+    
+    // Add different enemy configurations for each level
+    switch(level.id) {
+        case 1:
+            level.enemies.push(
+                { type: 'drone', x: 300, y: 400, patrolStart: 200, patrolEnd: 500 }
+            );
+            break;
+        case 2:
+            level.enemies.push(
+                { type: 'drone', x: 200, y: 400, patrolStart: 100, patrolEnd: 400 },
+                { type: 'virus', x: 600, y: 300 }
+            );
+            break;
+        case 3:
+            level.enemies.push(
+                { type: 'drone', x: 300, y: 400, patrolStart: 200, patrolEnd: 500 },
+                { type: 'virus', x: 500, y: 250 },
+                { type: 'firewall', x: 650, y: 500 }
+            );
+            break;
+        case 4:
+            level.enemies.push(
+                { type: 'virus', x: 400, y: 200 },
+                { type: 'virus', x: 600, y: 350 },
+                { type: 'firewall', x: 200, y: 450 }
+            );
+            break;
+        case 5:
+            level.enemies.push(
+                { type: 'drone', x: 300, y: 300, patrolStart: 200, patrolEnd: 400 },
+                { type: 'virus', x: 500, y: 400 },
+                { type: 'firewall', x: 700, y: 500 },
+                { type: 'firewall', x: 100, y: 300 }
+            );
+            break;
+    }
+}); 
