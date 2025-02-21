@@ -746,8 +746,68 @@ function gameLoop(currentTime) {
     }
 }
 
+// Three.js Background Setup
+let scene, camera, renderer, particles;
+
+function initThreeJS() {
+    scene = new THREE.Scene();
+    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    renderer = new THREE.WebGLRenderer({ alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.getElementById('background-canvas').appendChild(renderer.domElement);
+
+    // Create particles
+    const geometry = new THREE.BufferGeometry();
+    const vertices = [];
+    const sizes = [];
+
+    for (let i = 0; i < 2000; i++) {
+        vertices.push(
+            Math.random() * 2000 - 1000,
+            Math.random() * 2000 - 1000,
+            Math.random() * 2000 - 1000
+        );
+        sizes.push(Math.random() * 2);
+    }
+
+    geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+    geometry.setAttribute('size', new THREE.Float32BufferAttribute(sizes, 1));
+
+    const material = new THREE.PointsMaterial({
+        color: 0x8BC34A,
+        size: 2,
+        transparent: true,
+        opacity: 0.8,
+        sizeAttenuation: true
+    });
+
+    particles = new THREE.Points(geometry, material);
+    scene.add(particles);
+    camera.position.z = 1000;
+
+    // Handle window resize
+    window.addEventListener('resize', onWindowResize, false);
+}
+
+function onWindowResize() {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
+function animateBackground() {
+    requestAnimationFrame(animateBackground);
+    particles.rotation.x += 0.0003;
+    particles.rotation.y += 0.0005;
+    renderer.render(scene, camera);
+}
+
 // Initialize the game state
 function initGame() {
+    // Initialize Three.js background
+    initThreeJS();
+    animateBackground();
+
     // Reset game state
     score = 0;
     lives = 3;

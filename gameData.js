@@ -1,23 +1,23 @@
 // Game story and lore
 const gameLore = {
-    title: "Starfall Guardian: The Celestial Collection",
+    title: "Fun With Neale: The AI Adventure",
     chapters: [
         {
             id: 1,
-            title: "The First Star",
-            story: "In the cosmic realm of Aethoria, you are Neale, the last of the Star Guardians. Your sacred duty is to collect fallen stars before they touch the ground and release chaotic energy. Each star contains ancient wisdom and power that can help restore balance to the universe.",
+            title: "The Digital Pioneer",
+            story: "Meet Neale, a brilliant AI researcher pushing the boundaries of artificial intelligence. In this virtual world, you control Neale as they collect data points and insights that could revolutionize the field of AI. Each collected point represents a breakthrough in understanding machine learning and consciousness.",
             unlockScore: 0
         },
         {
             id: 2,
-            title: "The Growing Power",
-            story: "As you collect more stars, you begin to feel their energy coursing through you. The ancient powers of the Star Guardians slowly awaken within you. But beware - dark forces have noticed your activities...",
+            title: "Neural Networks Unleashed",
+            story: "As Neale gathers more data, patterns begin to emerge. The neural networks they've designed start showing signs of unprecedented learning capabilities. But with great power comes great responsibility - the AI systems are becoming more complex and harder to control...",
             unlockScore: 100
         },
         {
             id: 3,
-            title: "The Dark Seeker",
-            story: "Shadow creatures begin appearing, trying to intercept the falling stars. Your mission becomes more urgent - you must prevent these cosmic forces from falling into the wrong hands.",
+            title: "The Ethical Dilemma",
+            story: "Strange anomalies begin appearing in the data - signs of emergent behavior in the AI systems. Neale must now balance the pursuit of scientific breakthrough with ethical considerations. Can they maintain control while pushing the boundaries of what's possible?",
             unlockScore: 300
         }
     ]
@@ -26,11 +26,11 @@ const gameLore = {
 // Character progression system
 const progression = {
     levels: [
-        { level: 1, expRequired: 0, title: "Novice Guardian" },
-        { level: 2, expRequired: 100, title: "Star Apprentice" },
-        { level: 3, expRequired: 300, title: "Stellar Adept" },
-        { level: 4, expRequired: 600, title: "Cosmic Collector" },
-        { level: 5, expRequired: 1000, title: "Master Guardian" }
+        { level: 1, expRequired: 0, title: "Junior Researcher" },
+        { level: 2, expRequired: 100, title: "AI Engineer" },
+        { level: 3, expRequired: 300, title: "ML Architect" },
+        { level: 4, expRequired: 600, title: "AI Pioneer" },
+        { level: 5, expRequired: 1000, title: "Digital Visionary" }
     ]
 };
 
