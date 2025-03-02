@@ -163,6 +163,48 @@ const additionalWorks = [
 // Merge additional works into existing works array
 works.push(...additionalWorks);
 
+// Add additional works near the center of the chart
+const centralWorks = [
+  // Works with very small values (very close to origin)
+  {"name": "Untitled #1", "a": 0.1, "b": 0.2, "type": "Visual Art"},
+  {"name": "Neutral Composition", "a": -0.2, "b": 0.1, "type": "Visual Art"},
+  {"name": "Ambient 1: Music for Airports", "a": 0.3, "b": -0.2, "type": "Music"},
+  {"name": "The Middle Path", "a": -0.15, "b": -0.25, "type": "Literature"},
+  
+  // Works straddling the origin with small values
+  {"name": "Oblique Strategies", "a": -0.4, "b": 0.3, "type": "Music"},
+  {"name": "Zen Garden", "a": 0.3, "b": 0.5, "type": "Architecture"},
+  {"name": "Small Memories", "a": 0.4, "b": -0.35, "type": "Literature"},
+  {"name": "Quiet Mind", "a": -0.3, "b": -0.4, "type": "Poetry"},
+  
+  // Works in between quadrants with moderate values
+  {"name": "The Glass Bead Game", "a": 0.7, "b": 0.6, "type": "Literature"},
+  {"name": "Notes from Underground", "a": -0.8, "b": 0.7, "type": "Literature"},
+  {"name": "The Stranger", "a": -0.5, "b": -0.6, "type": "Literature"},
+  {"name": "Lost in Translation", "a": 0.6, "b": -0.7, "type": "Film"},
+  
+  // Works on the axes
+  {"name": "Perfect Balance", "a": 0, "b": 0.9, "type": "Sculpture"}, 
+  {"name": "Pure Context", "a": 1.1, "b": 0, "type": "Photography"},
+  {"name": "Zero Point", "a": 0, "b": -0.8, "type": "Visual Art"},
+  {"name": "Negative Space", "a": -0.9, "b": 0, "type": "Architecture"},
+  
+  // Works with decimal values crossing quadrant boundaries
+  {"name": "In Between Days", "a": 0.4, "b": 0.8, "type": "Music"},
+  {"name": "Liminal Space", "a": -0.5, "b": 0.9, "type": "Photography"},
+  {"name": "Neither Here Nor There", "a": -0.7, "b": -0.5, "type": "Film"},
+  {"name": "The Gray Area", "a": 0.6, "b": -0.4, "type": "Television"},
+  
+  // Works with very specific positions for balance
+  {"name": "Wabi-Sabi", "a": 0.25, "b": 0.35, "type": "Visual Art"},
+  {"name": "The Middle Way", "a": -0.35, "b": 0.25, "type": "Literature"},
+  {"name": "Equidistant", "a": -0.25, "b": -0.45, "type": "Sculpture"},
+  {"name": "Balanced Composition", "a": 0.45, "b": -0.25, "type": "Music"}
+];
+
+// Add the central works to the main works array
+works.push(...centralWorks);
+
 // Reinitialize categories properly
 const categories = [...new Set(works.map(work => work.type))];
 
@@ -401,7 +443,56 @@ const additionalDescriptions = {
   
   "Richard Serra's Tilted Arc": "This public sculpture maintained conventional materials and placement (a = 0.3) with moderate hyper realism (b = -1.2). Its massive, physical presence in public space forces viewers to confront its material reality and spatial disruption with such immediacy that its impact on daily movement becomes an inescapable experience.",
   
-  "The Road": "McCarthy's novel employs straightforward narrative prose (a = 0.8) with extreme hyper realism (b = -3.0). Its meticulous documentation of survival, physical deterioration, and environmental devastation presents post-apocalyptic reality with such stark, unmediated clarity that mortality and persistence become tangibly present on every page."
+  "The Road": "McCarthy's novel employs straightforward narrative prose (a = 0.8) with extreme hyper realism (b = -3.0). Its meticulous documentation of survival, physical deterioration, and environmental devastation presents post-apocalyptic reality with such stark, unmediated clarity that mortality and persistence become tangibly present on every page.",
+  
+  "Untitled #1": "A minimalist artwork positioned almost at the origin (a = 0.1, b = 0.2), representing an almost perfect balance between convention and abstraction. The work exists in a state of neutrality, neither conforming to nor rejecting established artistic norms.",
+  
+  "Neutral Composition": "A visual piece that slightly favors unconventional context (a = -0.2) with minimal abstraction (b = 0.1). The work maintains a deliberate neutrality while subtly questioning visual language.",
+  
+  "Ambient 1: Music for Airports": "Brian Eno's groundbreaking ambient album sits just barely in the conventional realm (a = 0.3) while leaning slightly toward hyper-realism (b = -0.2). The music creates atmospheric textures that blend almost imperceptibly with real-world sounds.",
+  
+  "The Middle Path": "A literary work that explores balance through minimal departures from center in both context (a = -0.15) and realism (b = -0.25). The narrative deliberately avoids extremes while examining the concept of moderation itself.",
+  
+  "The Glass Bead Game": "Hermann Hesse's masterpiece balances conventional storytelling (a = 0.7) with moderate abstraction (b = 0.6). The novel creates a near-future world that feels both familiar and elevated into intellectual abstraction.",
+  
+  "Zen Garden": "An architectural work that follows minimalist conventional design principles (a = 0.3) with a touch of abstraction (b = 0.5). The garden's arrangement represents nature in an idealized, abstracted form while maintaining recognizable elements.",
+  
+  "Wabi-Sabi": "A visual representation of the Japanese aesthetic concept that embraces imperfection. With values close to the origin (a = 0.25, b = 0.35), it gently balances convention with abstraction, finding beauty in the imperfect middle ground.",
+
+  // Adding descriptions for remaining central works
+  "Oblique Strategies": "Brian Eno and Peter Schmidt's deck of creative prompt cards embraces unconventional approaches to creative processes (a = -0.4) while maintaining a modest level of abstraction (b = 0.3). The work exists at the intersection of practical tool and conceptual art, challenging traditional creative methods while offering tangible pathways to artistic solutions.",
+  
+  "Small Memories": "José Saramago's memoir employs conventional literary techniques (a = 0.4) with a slight lean toward hyper-realism (b = -0.35). The work presents childhood memories with precise detail while maintaining a traditional narrative structure, creating a delicate balance between documentary precision and literary form.",
+  
+  "Quiet Mind": "This poetic work sits in the space between unconventional form (a = -0.3) and hyper-realism (b = -0.4). Its minimalist approach strips away poetic artifice while focusing intensely on present-moment awareness, creating a work that questions poetic convention while drawing attention to immediate reality.",
+  
+  "Notes from Underground": "Dostoevsky's novel employs unconventional narrative techniques for its time (a = -0.8) while achieving modest positive abstraction (b = 0.7). Its stream-of-consciousness style and psychological depth create a work that broke with 19th century fictional conventions while elevating subjective experience to philosophical exploration.",
+  
+  "The Stranger": "Camus' existentialist novel employs unconventional emotional detachment (a = -0.5) with moderate hyper-realism (b = -0.6). Its affectless protagonist and precise descriptions create a work that challenges narrative conventions while presenting reality with unflinching directness that emphasizes life's essential absurdity.",
+  
+  "Lost in Translation": "Sofia Coppola's film maintains some conventional narrative elements (a = 0.6) while leaning toward hyper-realism (b = -0.7). Its careful observation of cultural disconnection, empty luxury, and human connection creates an experience that feels both structured and documentary-like in its attention to emotional and environmental detail.",
+  
+  "Perfect Balance": "This sculptural work sits directly on the vertical axis (a = 0, b = 0.9), representing perfect neutrality in context while achieving significant positive abstraction. The work neither embraces nor rejects traditional form, instead transcending context questions entirely to focus on abstract spatial relationships and viewer experience.",
+  
+  "Pure Context": "This photographic series sits directly on the horizontal axis (a = 1.1, b = 0), representing conventional approach with neutral abstraction. The work embraces established photographic traditions and techniques while achieving perfect balance between abstraction and realism, creating images that are neither heightened nor diminished in their representational quality.",
+  
+  "Zero Point": "This visual art piece sits on the vertical axis (a = 0, b = -0.8), representing neutral context with moderate hyper-realism. The work transcends questions of conventional/unconventional approach, instead focusing on presenting reality with such precision that ordinary objects and scenes take on extraordinary presence and significance.",
+  
+  "Negative Space": "This architectural work sits on the horizontal axis (a = -0.9, b = 0), representing unconventional context with neutral abstraction. The building challenges traditional architectural approaches by focusing on the spaces between structural elements, giving equal importance to voids and solids while maintaining a perfect balance between abstraction and realism.",
+  
+  "In Between Days": "This musical composition by The Cure balances conventional song structure (a = 0.4) with moderate abstraction (b = 0.8). The work maintains recognizable pop elements while its atmospheric qualities and emotional resonance create a transcendent listening experience that elevates beyond mere entertainment.",
+  
+  "Liminal Space": "This photographic series employs unconventional compositional approaches (a = -0.5) with high positive abstraction (b = 0.9). By focusing on transitional spaces like hallways, stairwells, and thresholds, the work challenges traditional subject matter while creating images that transcend physical reality to explore psychological and spiritual transitions.",
+  
+  "Neither Here Nor There": "This film employs unconventional narrative structure (a = -0.7) with moderate hyper-realism (b = -0.5). By focusing on characters caught between cultures, identities, or life stages, it presents their experiences with unflinching detail while challenging cinematic conventions through fragmented storytelling and ambiguous resolution.",
+  
+  "The Gray Area": "This television series balances conventional episodic structure (a = 0.6) with moderate hyper-realism (b = -0.4). The show presents moral dilemmas with nuanced attention to emotional and ethical complexity, creating a viewing experience that uses familiar narrative frameworks to explore ambiguity with documentary-like precision.",
+  
+  "The Middle Way": "This literary work slightly favors unconventional approaches (a = -0.35) while maintaining modest abstraction (b = 0.25). Drawing inspiration from Buddhist philosophy, the narrative neither fully embraces nor rejects traditional storytelling, instead finding a balanced path that explores moderation itself as both theme and method.",
+  
+  "Equidistant": "This sculptural installation sits between unconventional context (a = -0.25) and hyper-realism (b = -0.45). The work challenges traditional gallery presentation while focusing on precise material properties and spatial relationships, creating an experience that questions artistic conventions while drawing attention to physical reality.",
+  
+  "Balanced Composition": "This musical work employs conventional compositional techniques (a = 0.45) with modest hyper-realism (b = -0.25). The piece uses traditional musical structures while focusing on acoustic properties and precise tonal relationships, creating a balanced listening experience that honors convention while highlighting sonic reality."
 };
 
 // Merge additional descriptions
