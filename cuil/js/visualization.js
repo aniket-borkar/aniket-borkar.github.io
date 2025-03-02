@@ -101,8 +101,8 @@ function initializeVisualization() {
   const quadrantLabels = [
     { text: "Q1: Conventional, Positive Abstraction", x: innerWidth * 0.75, y: innerHeight * 0.25 },
     { text: "Q2: Unconventional, Positive Abstraction", x: innerWidth * 0.25, y: innerHeight * 0.25 },
-    { text: "Q3: Unconventional, Negative Abstraction", x: innerWidth * 0.25, y: innerHeight * 0.75 },
-    { text: "Q4: Conventional, Negative Abstraction", x: innerWidth * 0.75, y: innerHeight * 0.75 }
+    { text: "Q3: Unconventional, Hyper Realism", x: innerWidth * 0.25, y: innerHeight * 0.75 },
+    { text: "Q4: Conventional, Hyper Realism", x: innerWidth * 0.75, y: innerHeight * 0.75 }
   ];
   
   quadrantLabels.forEach(label => {
@@ -161,18 +161,18 @@ function initializeVisualization() {
     .attr('y1', 0)
     .attr('x2', xScale(0))
     .attr('y2', innerHeight)
-    .attr('stroke', 'rgba(255, 255, 255, 0.2)')
-    .attr('stroke-width', 1)
-    .attr('stroke-dasharray', '4,4');
+    .attr('stroke', 'rgba(255, 255, 255, 0.6)')
+    .attr('stroke-width', 2)
+    .attr('class', 'origin-line');
     
   g.append('line')
     .attr('x1', 0)
     .attr('y1', yScale(0))
     .attr('x2', innerWidth)
     .attr('y2', yScale(0))
-    .attr('stroke', 'rgba(255, 255, 255, 0.2)')
-    .attr('stroke-width', 1)
-    .attr('stroke-dasharray', '4,4');
+    .attr('stroke', 'rgba(255, 255, 255, 0.6)')
+    .attr('stroke-width', 2)
+    .attr('class', 'origin-line');
   
   // Create a clip path to ensure elements don't render outside the plot area
   svg.append('defs').append('clipPath')
@@ -214,12 +214,14 @@ function initializeVisualization() {
       });
       
       // Update origin lines
-      g.select('line[x1="' + xScale(0) + '"]')
-        .attr('x1', newXScale(0))
+      g.selectAll('.origin-line').filter(function() {
+        return this.getAttribute('x1') === this.getAttribute('x2');
+      }).attr('x1', newXScale(0))
         .attr('x2', newXScale(0));
       
-      g.select('line[y1="' + yScale(0) + '"]')
-        .attr('y1', newYScale(0))
+      g.selectAll('.origin-line').filter(function() {
+        return this.getAttribute('y1') === this.getAttribute('y2');
+      }).attr('y1', newYScale(0))
         .attr('y2', newYScale(0));
         
       // Update quadrant labels
@@ -242,11 +244,23 @@ function updateVisualization(animate = false) {
   // Clear previous points and lines
   g.selectAll('.work-point, .type-line').remove();
   
-  // Filter works based on selected categories
-  const filteredWorks = selectedCategories.size > 0
-    ? works.filter(work => selectedCategories.has(work.type))
-    : works;
-    
+  // Filter works based on selected categories and search term
+  let filteredWorks = works;
+  
+  // Apply category filter if any categories are selected
+  if (selectedCategories.size > 0) {
+    filteredWorks = filteredWorks.filter(work => selectedCategories.has(work.type));
+  }
+  
+  // Apply search filter if search term exists
+  if (searchTerm && searchTerm.length > 0) {
+    filteredWorks = filteredWorks.filter(work => 
+      work.name.toLowerCase().includes(searchTerm) || 
+      work.type.toLowerCase().includes(searchTerm) ||
+      (descriptions[work.name] && descriptions[work.name].toLowerCase().includes(searchTerm))
+    );
+  }
+  
   // Update clear button visibility
   const clearButton = categoryFiltersContainer.querySelector('button:last-child');
   clearButton.style.display = selectedCategories.size > 0 ? 'block' : 'none';
@@ -270,31 +284,92 @@ function updateVisualization(animate = false) {
       else if (a < 0 && b < 0) quadrantClass = 'quadrant-3-point';
       else quadrantClass = 'quadrant-4-point';
       
+      // Add metrics selection class if applicable
+      if (d[1].some(work => isWorkSelectedForMetrics(work))) {
+        quadrantClass += ' selected-for-metrics';
+      }
+      
       return `work-point ${quadrantClass}`;
     })
     .attr('cx', d => xScale(d[1][0].a))
     .attr('cy', d => yScale(d[1][0].b))
     .attr('r', 0) // Start with radius 0 for animation
     .attr('fill', d => {
-      // If multiple types at this position, use a gradient or special color
+      const numTypes = new Set(d[1].map(w => w.type)).size;
+      
+      // For matching search term, make point more vibrant
+      const isSearchMatch = searchTerm && d[1].some(work => 
+        work.name.toLowerCase().includes(searchTerm) || 
+        work.type.toLowerCase().includes(searchTerm) ||
+        (descriptions[work.name] && descriptions[work.name].toLowerCase().includes(searchTerm))
+      );
+      
+      // If multiple types at this position, use a different opacity
       const types = [...new Set(d[1].map(w => w.type))];
       if (types.length === 1) {
-        return typeColors[types[0]] || '#718096';
+        if (isSearchMatch) {
+          return typeColors[types[0]] || '#718096';
+        } else if (searchTerm && searchTerm.length > 0) {
+          // Dim points that don't match search
+          return `${typeColors[types[0]]}40` || '#71809640';
+        } else {
+          return typeColors[types[0]] || '#718096';
+        }
       } else {
-        // For multiple types, use a special color or make the point larger
-        return '#ffffff';
+        // For multiple types
+        if (isSearchMatch) {
+          return '#ffffff';
+        } else if (searchTerm && searchTerm.length > 0) {
+          return 'rgba(255, 255, 255, 0.3)';
+        } else {
+          return '#ffffff';
+        }
       }
     })
     .attr('stroke', d => {
+      // Add stroke to search matches, metrics selections, and multi-type points
       const types = [...new Set(d[1].map(w => w.type))];
-      if (types.length > 1) {
+      const isSearchMatch = searchTerm && d[1].some(work => 
+        work.name.toLowerCase().includes(searchTerm) || 
+        work.type.toLowerCase().includes(searchTerm) ||
+        (descriptions[work.name] && descriptions[work.name].toLowerCase().includes(searchTerm))
+      );
+      
+      // Check if any work at this position is selected for metrics
+      const isSelectedForMetrics = d[1].some(work => isWorkSelectedForMetrics(work));
+      
+      if (isSelectedForMetrics) {
+        return '#00ebc7'; // Teal color for metrics selection
+      } else if (selectedWork && d[1].some(w => w.name === selectedWork.name)) {
+        return '#ffffff';
+      } else if (isSearchMatch) {
+        return '#ffffff';
+      } else if (types.length > 1) {
         return 'rgba(255, 255, 255, 0.8)';
       } else {
         return 'none';
       }
     })
     .attr('stroke-width', d => {
-      return d[1].length > 1 ? 2 : 0;
+      const types = [...new Set(d[1].map(w => w.type))];
+      const isSearchMatch = searchTerm && d[1].some(work => 
+        work.name.toLowerCase().includes(searchTerm) || 
+        work.type.toLowerCase().includes(searchTerm) ||
+        (descriptions[work.name] && descriptions[work.name].toLowerCase().includes(searchTerm))
+      );
+      
+      // Check if any work at this position is selected for metrics
+      const isSelectedForMetrics = d[1].some(work => isWorkSelectedForMetrics(work));
+      
+      if (isSelectedForMetrics) {
+        return 3;
+      } else if (selectedWork && d[1].some(w => w.name === selectedWork.name)) {
+        return 3;
+      } else if (isSearchMatch) {
+        return 2;
+      } else {
+        return types.length > 1 ? 2 : 0;
+      }
     })
     .style('opacity', 0) // Start with opacity 0 for animation
     .on('mouseover', function(event, d) {
@@ -331,11 +406,12 @@ function updateVisualization(animate = false) {
       // Restore the point size unless it's selected
       const pointData = d3.select(this).datum();
       const isSelected = selectedWork && pointData[1].some(w => w.name === selectedWork.name);
+      const isSelectedForMetrics = pointData[1].some(work => isWorkSelectedForMetrics(work));
       
       d3.select(this)
         .transition()
         .duration(300)
-        .attr('r', isSelected ? 10 : 8);
+        .attr('r', isSelected || isSelectedForMetrics ? 10 : 8);
         
       // Hide tooltip
       tooltip.style.opacity = 0;
@@ -351,8 +427,28 @@ function updateVisualization(animate = false) {
         
         // Update selection styling for all points
         svg.selectAll('.work-point')
-          .attr('stroke', d => (selectedWork && d[1].some(w => w.name === selectedWork.name)) ? '#ffffff' : 'none')
-          .attr('stroke-width', d => (selectedWork && d[1].some(w => w.name === selectedWork.name)) ? 3 : 0);
+          .attr('stroke', d => {
+            // Check if any work at this position is selected for metrics
+            const isSelectedForMetrics = d[1].some(work => isWorkSelectedForMetrics(work));
+            
+            if (isSelectedForMetrics) {
+              return '#00ebc7'; // Teal color for metrics selection
+            } else if (selectedWork && d[1].some(w => w.name === selectedWork.name)) {
+              return '#ffffff'; // White for the currently selected work
+            } else {
+              return 'none';
+            }
+          })
+          .attr('stroke-width', d => {
+            // Check if any work at this position is selected for metrics
+            const isSelectedForMetrics = d[1].some(work => isWorkSelectedForMetrics(work));
+            
+            if (isSelectedForMetrics || (selectedWork && d[1].some(w => w.name === selectedWork.name))) {
+              return 3;
+            } else {
+              return 0;
+            }
+          });
       } else {
         // If multiple works, show selection panel
         showWorkSelectionPanel(works, event.pageX, event.pageY);
@@ -361,14 +457,56 @@ function updateVisualization(animate = false) {
     
   // Animate the points if requested
   if (animate) {
-    points.transition()
+    g.selectAll('.work-point')
+      .transition()
       .duration(800)
       .delay((d, i) => i * 10)
-      .attr('r', 8)
-      .style('opacity', 1);
+      .style('opacity', 1)
+      .attr('r', function() {
+        // Get the data for this point
+        const d = d3.select(this).datum();
+        
+        // Determine radius based on search match, metrics selection, and number of works at this position
+        const isSearchMatch = searchTerm && d[1].some(work => 
+          work.name.toLowerCase().includes(searchTerm) || 
+          work.type.toLowerCase().includes(searchTerm) ||
+          (descriptions[work.name] && descriptions[work.name].toLowerCase().includes(searchTerm))
+        );
+        
+        const isSelectedForMetrics = d[1].some(work => isWorkSelectedForMetrics(work));
+        
+        if (isSelectedForMetrics) {
+          return 10; // Larger radius for metrics-selected works
+        } else if (d[1].length > 1) {
+          return (isSearchMatch ? 8 : 6);
+        } else {
+          return (isSearchMatch ? 6 : 4);
+        }
+      });
   } else {
-    points.attr('r', 8)
-      .style('opacity', 1);
+    g.selectAll('.work-point')
+      .style('opacity', 1)
+      .attr('r', function() {
+        // Get the data for this point
+        const d = d3.select(this).datum();
+        
+        // Determine radius based on search match, metrics selection, and number of works at this position
+        const isSearchMatch = searchTerm && d[1].some(work => 
+          work.name.toLowerCase().includes(searchTerm) || 
+          work.type.toLowerCase().includes(searchTerm) ||
+          (descriptions[work.name] && descriptions[work.name].toLowerCase().includes(searchTerm))
+        );
+        
+        const isSelectedForMetrics = d[1].some(work => isWorkSelectedForMetrics(work));
+        
+        if (isSelectedForMetrics) {
+          return 10; // Larger radius for metrics-selected works
+        } else if (d[1].length > 1) {
+          return (isSearchMatch ? 8 : 6);
+        } else {
+          return (isSearchMatch ? 6 : 4);
+        }
+      });
   }
   
   // Draw lines connecting works of the same type if there are enough points

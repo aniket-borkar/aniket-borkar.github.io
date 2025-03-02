@@ -230,7 +230,135 @@ h1, h2, h3, h4, h5, h6 {
   filter: drop-shadow(0 0 8px rgba(255, 165, 0, 0.3));
 }
 
+/* Search-related styles */
+#search-input {
+  transition: all 0.3s ease;
+}
+
+#search-input:focus {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
+#search-input.border-blue-500 {
+  border-color: rgba(59, 130, 246, 0.8);
+  background-color: rgba(59, 130, 246, 0.05);
+}
+
+#clear-search {
+  transition: all 0.2s ease;
+}
+
+#clear-search:hover {
+  transform: scale(1.2);
+}
+
+#search-feedback {
+  animation: fadeIn 0.3s ease forwards;
+}
+
+/* Origin lines styling */
+.origin-line {
+  filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.4));
+  transition: all 0.3s ease;
+}
+
 /* Current year in footer */
 #current-year::after {
   content: attr(data-year);
+}
+
+/* Metrics visualization styles */
+.metrics-panel {
+  max-width: 1200px;
+  margin: 2rem auto;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.selected-for-metrics {
+  filter: drop-shadow(0 0 12px rgba(0, 235, 199, 0.6)) !important;
+}
+
+#metrics-chart-container {
+  min-height: 400px;
+  position: relative;
+}
+
+.bar {
+  transition: opacity 0.3s ease;
+}
+
+#temp-message {
+  transition: opacity 0.5s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Make sure tooltip displays over everything */
+.tooltip {
+  z-index: 9999;
+}
+
+/* Metrics Charts Container */
+#metrics-charts-container {
+  position: relative;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto 2rem auto;
+  background-color: rgba(15, 14, 23, 0.7);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  border-radius: 1rem;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  animation: slideDown 0.5s ease-out;
+  transform-origin: top center;
+}
+
+#metrics-chart-container {
+  width: 100%;
+  min-height: 300px;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.bar {
+  transition: opacity 0.3s ease;
+  filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.1));
+}
+
+.bar:hover {
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.3));
+}
+
+.value-label {
+  text-shadow: 0 0 3px rgba(0, 0, 0, 0.8);
+  pointer-events: none;
+}
+
+/* Ensure tooltip displays properly for metrics charts */
+.tooltip {
+  position: absolute;
+  background-color: rgba(15, 14, 23, 0.95);
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  font-size: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  max-width: 200px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: 1000;
 } 

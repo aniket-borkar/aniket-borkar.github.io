@@ -54,12 +54,12 @@
             <p class="text-gray-300">
               The imaginary part <strong class="text-white">b</strong> represents the "cuil level" — the direction and degree
               of abstraction. Positive values indicate elevating abstraction, while negative values
-              represent subversive abstraction.
+              represent increasing hyper realism.
             </p>
             <ul class="list-disc list-inside mt-4 text-gray-300 space-y-1">
               <li>b > 0: Positive abstraction (transcendent, elevating)</li>
               <li>b = 0: Neutral abstraction</li>
-              <li>b < 0: Negative abstraction (subversive, unsettling)</li>
+              <li>b < 0: Hyper realism (intensified detail, heightened focus)</li>
             </ul>
           </div>
         </div>
@@ -73,8 +73,8 @@
             <ul class="list-disc list-inside mt-4 text-gray-300 space-y-1">
               <li><strong>Quadrant I (+a, +b):</strong> Conventional context with positive abstraction</li>
               <li><strong>Quadrant II (-a, +b):</strong> Unconventional context with positive abstraction</li>
-              <li><strong>Quadrant III (-a, -b):</strong> Unconventional context with negative abstraction</li>
-              <li><strong>Quadrant IV (+a, -b):</strong> Conventional context with negative abstraction</li>
+              <li><strong>Quadrant III (-a, -b):</strong> Unconventional context with hyper realism</li>
+              <li><strong>Quadrant IV (+a, -b):</strong> Conventional context with hyper realism</li>
             </ul>
           </div>
           
@@ -99,6 +99,19 @@
         <div class="glass-card p-6 mb-6 fade-in delay-3">
           <h3 class="text-sm font-semibold text-gray-300 mb-4">Filter by category:</h3>
           <div id="category-filters" class="flex flex-wrap gap-3"></div>
+        </div>
+        
+        <div class="glass-card p-6 mb-6 fade-in delay-3">
+          <h3 class="text-sm font-semibold text-gray-300 mb-4">Search works:</h3>
+          <div class="relative">
+            <input type="text" id="search-input" placeholder="Search by work name..." 
+              class="w-full px-4 py-2 bg-gray-800 bg-opacity-50 text-white border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+            <button id="clear-search" class="absolute right-3 top-2.5 text-gray-400 hover:text-white" style="display: none;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
+              </svg>
+            </button>
+          </div>
         </div>
         
         <div class="complex-plane fade-in delay-3">
@@ -135,6 +148,7 @@
 
   <!-- Import JS modules -->
   <script src="js/data.js"></script>
+  <script src="js/metrics.js"></script>
   <script src="js/visualization.js"></script>
   <script src="js/interactions.js"></script>
   <script src="js/main.js"></script>
