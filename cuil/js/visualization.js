@@ -17,7 +17,7 @@ function initializeVisualization() {
   const svgElement = document.getElementById('visualization');
   const width = svgElement.clientWidth;
   const height = svgElement.clientHeight;
-  const margin = { top: 60, right: 60, bottom: 60, left: 60 };
+  const margin = { top: 120, right: 60, bottom: 60, left: 60 }; // Further increased top margin for more space
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
   
@@ -87,16 +87,55 @@ function initializeVisualization() {
     .attr('y', -40)
     .attr('text-anchor', 'middle')
     .text('Cuil Level (b)');
-    
-  // Add title
+  
+  // Add title at the very top, centered
   g.append('text')
     .attr('class', 'font-bold text-lg')
     .attr('x', innerWidth / 2)
-    .attr('y', -20)
+    .attr('y', -90) // Moved up more to account for increased margin
     .attr('text-anchor', 'middle')
     .attr('fill', '#ffffff')
     .text('Works of Art in the Complex Plane');
+  
+  // Add legend with plenty of space above and below
+  const legendData = Object.entries(typeColors);
+  const legendItemWidth = 90; // Width of each legend item
+  const totalLegendWidth = legendData.length * legendItemWidth; // Calculate total legend width
+  
+  const legendGroup = g.append('g')
+    .attr('class', 'legend')
+    .attr('transform', `translate(${innerWidth/2 - totalLegendWidth/2}, -60)`); // Properly center the legend
+  
+  // Organize legend in a single row for cleaner look
+  legendData.forEach((item, i) => {
+    const [type, color] = item;
     
+    const g = legendGroup.append('g')
+      .attr('transform', `translate(${i * 90}, 0)`);
+      
+    g.append('rect')
+      .attr('width', 12)
+      .attr('height', 12)
+      .attr('rx', 6)
+      .attr('fill', color)
+      .attr('filter', 'drop-shadow(0 0 3px rgba(255, 255, 255, 0.3))');
+      
+    g.append('text')
+      .attr('x', 18)
+      .attr('y', 10)
+      .attr('font-size', '10px')
+      .attr('fill', 'rgba(255, 255, 255, 0.8)')
+      .text(type);
+  });
+
+  // Add instructions with increased spacing after the legend
+  g.append('text')
+    .attr('x', 0)
+    .attr('y', -20) // Closer to the chart to create more space between legend and instructions
+    .attr('font-size', '12px')
+    .attr('fill', 'rgba(255, 255, 255, 0.6)')
+    .text('Scroll to zoom, drag to pan, click on points to view details');
+  
   // Add origin lines
   g.append('line')
     .attr('x1', xScale(0))
@@ -115,40 +154,6 @@ function initializeVisualization() {
     .attr('stroke', 'rgba(255, 255, 255, 0.2)')
     .attr('stroke-width', 1)
     .attr('stroke-dasharray', '4,4');
-    
-  // Add legend, positioned outside the grid
-  const legendData = Object.entries(typeColors);
-  const legendGroup = g.append('g')
-    .attr('class', 'legend')
-    .attr('transform', `translate(${innerWidth + 20}, 10)`);
-    
-  legendData.forEach((item, i) => {
-    const [type, color] = item;
-    const g = legendGroup.append('g')
-      .attr('transform', `translate(0, ${i * 25})`);
-      
-    g.append('rect')
-      .attr('width', 14)
-      .attr('height', 14)
-      .attr('rx', 7)
-      .attr('fill', color)
-      .attr('filter', 'drop-shadow(0 0 3px rgba(255, 255, 255, 0.3))');
-      
-    g.append('text')
-      .attr('x', 24)
-      .attr('y', 10)
-      .attr('font-size', '12px')
-      .attr('fill', 'rgba(255, 255, 255, 0.8)')
-      .text(type);
-  });
-  
-  // Add instructions
-  g.append('text')
-    .attr('x', 0)
-    .attr('y', -30)
-    .attr('font-size', '12px')
-    .attr('fill', 'rgba(255, 255, 255, 0.6)')
-    .text('Scroll to zoom, drag to pan, click on points to view details');
   
   // Create a clip path to ensure elements don't render outside the plot area
   svg.append('defs').append('clipPath')
