@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Junior Researcher Game</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-header">
+            <h1 class="three-d-text">Junior Researcher</h1>
+            <p class="subtitle">Explore the Digital Frontier</p>
+        </div>
+
+        <div class="character-info">
+            <div class="level-badge">
+                <span>Level 1</span>
+                <div class="title">Junior Researcher</div>
+            </div>
+            <div class="exp-bar">
+                <div class="exp-progress"></div>
+                <span id="expText">0/100 XP</span>
+            </div>
+        </div>
+
+        <div class="game-area">
+            <canvas id="gameCanvas"></canvas>
+        </div>
+
+        <div class="game-stats">
+            <div class="lives">❤️ Lives: <span id="livesValue">3</span></div>
+            <div class="score">Score: <span id="scoreValue">0</span></div>
+            <div class="data-points">💾 Data Points: <span id="dataPoints">0</span></div>
+        </div>
+
+        <div class="controls-hint">
+            <div><span class="key">←</span> <span class="key">→</span> Move</div>
+            <div><span class="key">Space</span> Jump</div>
+            <div><span class="key">Z</span> Katana Slash</div>
+            <div><span class="key">X</span> Special Attack</div>
+            <div><span class="key">U</span> Upgrades</div>
+        </div>
+    </div>
+
+    <!-- Game Over Modal -->
+    <div id="gameOver" class="modal">
+        <div class="modal-content">
+            <h2>Research Paused!</h2>
+            <div class="stats-summary">
+                <p>Final Score: <span id="finalScore">0</span></p>
+                <p>Data Points Collected: <span id="dataCollected">0</span></p>
+                <p>Research Progress: <span id="researchProgress">0</span></p>
+            </div>
+            <button class="restart-button" onclick="restartGame()">Continue Research</button>
+        </div>
+    </div>
+
+    <!-- Chapter Notification -->
+    <div id="chapterNotification" class="chapter-notification">
+        <h3>New Research Milestone!</h3>
+        <p id="chapterTitle"></p>
+    </div>
+
+    <!-- Load game data first -->
+    <script src="gameData.js"></script>
+    <!-- Then load the main game -->
+    <script src="game.js"></script>
+</body>
+</html> 

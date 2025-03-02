@@ -3,68 +3,625 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Junior Researcher Game</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Aniket Borkar | Developer & Creator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary-color: #4f46e5;
+            --accent-color: #8b5cf6;
+            --text-dark: #1e293b;
+            --text-light: #64748b;
+            --bg-light: #f8fafc;
+            --bg-dark: #0f172a;
+            --card-bg: #ffffff;
+            --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.7;
+            color: var(--text-dark);
+            background-color: var(--bg-light);
+            overflow-x: hidden;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+        
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            transition: var(--transition);
+        }
+        
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 2rem;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .nav-link {
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .nav-link:after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background-color: var(--primary-color);
+            transition: var(--transition);
+        }
+        
+        .nav-link:hover {
+            color: var(--primary-color);
+        }
+        
+        .nav-link:hover:after {
+            width: 100%;
+        }
+        
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-content {
+            max-width: 600px;
+            z-index: 1;
+            animation: fadeIn 1s ease-in-out;
+        }
+        
+        .hero-title {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-dark);
+        }
+        
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-light);
+            margin-bottom: 2rem;
+            font-weight: 400;
+        }
+        
+        .hero-cta {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.25);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-3px);
+            box-shadow: 0 7px 14px rgba(37, 99, 235, 0.3);
+        }
+        
+        .btn-outline {
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--primary-color);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 7px 14px rgba(37, 99, 235, 0.1);
+        }
+        
+        .hero-image {
+            position: absolute;
+            right: -5%;
+            bottom: -10%;
+            width: 50%;
+            max-width: 600px;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        /* About Section */
+        .section {
+            padding: 6rem 0;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 4rem;
+            font-size: 2.5rem;
+            color: var(--text-dark);
+        }
+        
+        .section-title span {
+            color: var(--primary-color);
+        }
+        
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+        
+        .about-text h3 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-dark);
+        }
+        
+        .about-text p {
+            color: var(--text-light);
+            margin-bottom: 1.5rem;
+        }
+        
+        .skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .skill-tag {
+            background-color: rgba(37, 99, 235, 0.1);
+            color: var(--primary-color);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        /* Projects Section */
+        .projects {
+            background-color: #f1f5f9;
+        }
+        
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+        
+        .project-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+        }
+        
+        .project-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .project-image {
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: white;
+        }
+        
+        .project-content {
+            padding: 2rem;
+        }
+        
+        .project-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+        
+        .project-description {
+            color: var(--text-light);
+            margin-bottom: 1.5rem;
+        }
+        
+        .project-link {
+            display: inline-block;
+            color: var(--primary-color);
+            font-weight: 600;
+            transition: var(--transition);
+        }
+        
+        .project-link:hover {
+            color: var(--primary-dark);
+        }
+        
+        .project-link i {
+            margin-left: 0.5rem;
+            transition: var(--transition);
+        }
+        
+        .project-link:hover i {
+            transform: translateX(5px);
+        }
+        
+        /* Contact Section */
+        .contact {
+            background: linear-gradient(135deg, #dbeafe, #eff6ff);
+        }
+        
+        .contact-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+        
+        .contact-info h3 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .contact-info p {
+            color: var(--text-light);
+            margin-bottom: 2rem;
+        }
+        
+        .contact-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+        
+        .contact-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-dark);
+            transition: var(--transition);
+        }
+        
+        .contact-link:hover {
+            color: var(--primary-color);
+        }
+        
+        .contact-link i {
+            font-size: 1.2rem;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .social-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 1.2rem;
+            transition: var(--transition);
+        }
+        
+        .social-link:hover {
+            transform: translateY(-5px);
+            background-color: var(--primary-dark);
+        }
+        
+        /* Footer */
+        footer {
+            background-color: var(--bg-dark);
+            color: white;
+            padding: 3rem 0;
+            text-align: center;
+        }
+        
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        
+        .footer-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+        }
+        
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .footer-link {
+            color: #cbd5e1;
+            transition: var(--transition);
+        }
+        
+        .footer-link:hover {
+            color: white;
+        }
+        
+        .copyright {
+            color: #94a3b8;
+            margin-top: 2rem;
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+            100% {
+                transform: translateY(0px);
+            }
+        }
+        
+        /* Responsive */
+        @media (max-width: 992px) {
+            .hero-title {
+                font-size: 3rem;
+            }
+            
+            .about-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            
+            .contact-container {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .hero-image {
+                opacity: 0.3;
+                right: -20%;
+            }
+            
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="game-container">
-        <div class="game-header">
-            <h1 class="three-d-text">Junior Researcher</h1>
-            <p class="subtitle">Explore the Digital Frontier</p>
-        </div>
-
-        <div class="character-info">
-            <div class="level-badge">
-                <span>Level 1</span>
-                <div class="title">Junior Researcher</div>
-            </div>
-            <div class="exp-bar">
-                <div class="exp-progress"></div>
-                <span id="expText">0/100 XP</span>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="#" class="logo">Aniket Borkar</a>
+            <div class="nav-links">
+                <a href="#about" class="nav-link">About</a>
+                <a href="#projects" class="nav-link">Projects</a>
+                <a href="#contact" class="nav-link">Contact</a>
             </div>
         </div>
-
-        <div class="game-area">
-            <canvas id="gameCanvas"></canvas>
-        </div>
-
-        <div class="game-stats">
-            <div class="lives">❤️ Lives: <span id="livesValue">3</span></div>
-            <div class="score">Score: <span id="scoreValue">0</span></div>
-            <div class="data-points">💾 Data Points: <span id="dataPoints">0</span></div>
-        </div>
-
-        <div class="controls-hint">
-            <div><span class="key">←</span> <span class="key">→</span> Move</div>
-            <div><span class="key">Space</span> Jump</div>
-            <div><span class="key">Z</span> Katana Slash</div>
-            <div><span class="key">X</span> Special Attack</div>
-            <div><span class="key">U</span> Upgrades</div>
-        </div>
-    </div>
-
-    <!-- Game Over Modal -->
-    <div id="gameOver" class="modal">
-        <div class="modal-content">
-            <h2>Research Paused!</h2>
-            <div class="stats-summary">
-                <p>Final Score: <span id="finalScore">0</span></p>
-                <p>Data Points Collected: <span id="dataCollected">0</span></p>
-                <p>Research Progress: <span id="researchProgress">0</span></p>
+    </nav>
+    
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">Hi, I'm <span style="color: var(--primary-color);">Aniket Borkar</span></h1>
+                <p class="hero-subtitle">Systems Engineer with a passion for visualizing weird shit. I have AI models build engaging digital experiences and have them create visualaizations of weird topics.</p>
+                <div class="hero-cta">
+                    <a href="#projects" class="btn btn-primary">View My Work</a>
+                    <a href="#contact" class="btn btn-outline">Get In Touch</a>
+                </div>
             </div>
-            <button class="restart-button" onclick="restartGame()">Continue Research</button>
         </div>
-    </div>
-
-    <!-- Chapter Notification -->
-    <div id="chapterNotification" class="chapter-notification">
-        <h3>New Research Milestone!</h3>
-        <p id="chapterTitle"></p>
-    </div>
-
-    <!-- Load game data first -->
-    <script src="gameData.js"></script>
-    <!-- Then load the main game -->
-    <script src="game.js"></script>
+        <div class="hero-image">
+            <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                <path fill="#2563EB" d="M45.7,-76.3C58.9,-69.9,69.2,-56.3,76.4,-41.6C83.7,-26.9,87.9,-11.2,85.7,3.5C83.5,18.2,74.9,31.9,65.1,44.4C55.3,56.9,44.3,68.2,31.1,74.8C17.9,81.4,2.6,83.3,-12.4,81.1C-27.5,79,-42.3,72.8,-54.8,63C-67.3,53.2,-77.5,39.8,-82.5,24.7C-87.5,9.6,-87.3,-7.2,-82.6,-22.2C-77.9,-37.2,-68.7,-50.4,-56.5,-57.1C-44.3,-63.8,-29.1,-64,-14.8,-67.7C-0.5,-71.4,12.9,-78.6,27.4,-79.9C41.9,-81.2,57.5,-76.6,45.7,-76.3Z" transform="translate(100 100)" />
+            </svg>
+        </div>
+    </section>
+    
+    <!-- About Section -->
+    <section id="about" class="section">
+        <div class="container">
+            <h2 class="section-title">About <span>Me</span></h2>
+            <div class="about-content">
+                <div class="about-image">
+                    <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                        <path fill="#4F46E5" d="M47.7,-73.2C62.1,-66.3,74.5,-53.9,81.3,-39.1C88.1,-24.2,89.3,-7,85.8,8.8C82.3,24.5,74.1,38.8,63.5,51.5C52.9,64.2,39.8,75.3,24.7,80.1C9.6,84.9,-7.5,83.4,-22.9,77.5C-38.3,71.6,-52,61.3,-63.4,48.5C-74.8,35.7,-83.9,20.4,-86.5,3.8C-89.1,-12.8,-85.2,-30.8,-75.6,-44.8C-66,-58.8,-50.7,-68.8,-35.8,-75.1C-20.9,-81.4,-6.4,-84,8.3,-81.1C23,-78.2,45.9,-69.8,47.7,-73.2Z" transform="translate(100 100)" />
+                    </svg>
+                </div>
+                <div class="about-text">
+                    <h3>Developer with a passion for making computers do work</h3>
+                    <p>I'm a developer focused on using AI models to create engaging represenations that are both functional and visually appealing.</p>
+                    <p>My approach is to just let these models do their thing and see what comes out. If you check out the game section you'll find a surprisingly bad game which claude-3.5-sonnet generated very quickly. Even this website was made with claude-3.7-sonnet.</p>
+                    <p>aren't the blob shapes weird</p>
+                    <p>lol at the tags below too. It did all of this and provided skills it used</p>
+                    <div class="skills">
+                        <span class="skill-tag">HTML/CSS</span>
+                        <span class="skill-tag">JavaScript</span>
+                        <span class="skill-tag">React</span>
+                        <span class="skill-tag">Node.js</span>
+                        <span class="skill-tag">UI/UX Design</span>
+                        <span class="skill-tag">Game Development</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Projects Section -->
+    <section id="projects" class="section projects">
+        <div class="container">
+            <h2 class="section-title">My <span>Projects</span></h2>
+            <div class="projects-grid">
+                <div class="project-card">
+                    <div class="project-image" style="background: linear-gradient(135deg, #9b59b6, #8e44ad);">
+                        <i class="fas fa-gamepad"></i>
+                    </div>
+                    <div class="project-content">
+                        <h3 class="project-title">Junior Researcher Game</h3>
+                        <p class="project-description">An exciting platformer game where you collect data points, upgrade abilities, and advance through research milestones in a digital frontier.</p>
+                        <a href="game/index.html" class="project-link">Play Game <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+                
+                <div class="project-card">
+                    <div class="project-image" style="background: linear-gradient(135deg, #e74c3c, #c0392b);">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <div class="project-content">
+                        <h3 class="project-title">Portfolio Website</h3>
+                        <p class="project-description">A responsive portfolio website built with modern web technologies to showcase my projects and skills.</p>
+                        <a href="#" class="project-link">Coming Soon <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+                
+                <div class="project-card">
+                    <div class="project-image" style="background: linear-gradient(135deg, #2ecc71, #27ae60);">
+                        <i class="fas fa-pen-fancy"></i>
+                    </div>
+                    <div class="project-content">
+                        <h3 class="project-title">Tech Blog</h3>
+                        <p class="project-description">A blog where I share insights, tutorials, and thoughts on technology, development, and industry trends.</p>
+                        <a href="#" class="project-link">Coming Soon <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Contact Section -->
+    <section id="contact" class="section contact">
+        <div class="container">
+            <h2 class="section-title">Get In <span>Touch</span></h2>
+            <div class="contact-container">
+                <div class="contact-info">
+                    <h3>Let's Work Together</h3>
+                    <p>I'm always open to discussing new projects, creative ideas, or opportunities to be part of your vision.</p>
+                    <div class="contact-links">
+                        <a href="mailto:aniket.borkar@gmail.com" class="contact-link">
+                            <i class="fas fa-envelope"></i>
+                            <span>aniket.borkar@gmail.com</span>
+                        </a>
+                    </div>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+                <div class="contact-image">
+                    <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                        <path fill="#2563EB" d="M39.9,-65.7C52.5,-60.5,64.2,-51.1,71.7,-38.8C79.2,-26.5,82.5,-11.2,80.3,3C78.1,17.1,70.4,30.1,60.9,41.6C51.4,53.1,40.1,63.1,27.1,68.9C14.1,74.7,-0.7,76.3,-15.3,74.1C-29.9,71.9,-44.3,65.9,-54.8,55.7C-65.3,45.5,-71.9,31.1,-75.1,15.8C-78.3,0.5,-78.1,-15.7,-72.2,-29.1C-66.3,-42.5,-54.7,-53.1,-41.8,-58.1C-28.9,-63.1,-14.5,-62.5,-0.2,-62.2C14,-61.9,28,-70.9,39.9,-65.7Z" transform="translate(100 100)" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <a href="#" class="footer-logo">Aniket Borkar</a>
+                <div class="footer-links">
+                    <a href="#" class="footer-link">Home</a>
+                    <a href="#about" class="footer-link">About</a>
+                    <a href="#projects" class="footer-link">Projects</a>
+                    <a href="#contact" class="footer-link">Contact</a>
+                </div>
+                <p class="copyright">&copy; 2025 Aniket Borkar. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
 </body>
 </html> 
