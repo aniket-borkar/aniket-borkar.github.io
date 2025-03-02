@@ -19,18 +19,19 @@
   <header class="bg-gradient shadow-lg">
     <div class="container mx-auto px-6 py-8">
       <h1 class="text-4xl font-bold text-white mb-2 fade-in">Cuil Visualization</h1>
-      <p class="text-gray-300 mt-2 fade-in delay-1">Exploring the abstract dimensions of art in the complex plane</p>
+      <p class="text-gray-300 mt-2 fade-in delay-1">Exploring the full spectrum of art in the complex plane</p>
     </div>
   </header>
 
   <main class="container mx-auto px-4 py-12">
     <div class="glass-card p-8 mb-12 fade-in delay-2">
-      <h2 class="text-2xl font-bold text-white mb-6">Understanding Cuil Levels in Art</h2>
+      <h2 class="text-2xl font-bold text-white mb-6">Art in the Complex Plane</h2>
       
       <div class="max-w-none">
         <p class="text-gray-300 mb-6">
-          This visualization maps works of art in the complex plane, where each work is represented
-          by a complex number <strong class="text-white">z = a + bi</strong>, revealing hidden patterns in artistic expression.
+          This visualization maps 50 works of art in the complex plane, where each work is represented
+          by a complex number <strong class="text-white">z = a + bi</strong>, revealing patterns in artistic expression
+          across all four quadrants of the complex plane.
         </p>
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-6">
@@ -42,23 +43,52 @@
               contexts) to highly positive (conventional contexts).
             </p>
             <ul class="list-disc list-inside mt-4 text-gray-300 space-y-1">
-              <li>a = 2: Very conventional context</li>
+              <li>a > 0: Conventional context (established forms)</li>
               <li>a = 0: Neutral context</li>
-              <li>a = -2: Very unconventional context</li>
+              <li>a < 0: Unconventional context (breaking traditions)</li>
             </ul>
           </div>
           
           <div class="glass-card p-6 hover:border-purple-500">
             <h3 class="font-bold text-purple-400 mb-3">Cuil Level (b)</h3>
             <p class="text-gray-300">
-              The imaginary part <strong class="text-white">b</strong> represents the "cuil level" — the degree of abstraction,
-              surrealism, or departure from reality in the work's presentation.
+              The imaginary part <strong class="text-white">b</strong> represents the "cuil level" — the direction and degree
+              of abstraction. Positive values indicate elevating abstraction, while negative values
+              represent subversive abstraction.
             </p>
             <ul class="list-disc list-inside mt-4 text-gray-300 space-y-1">
-              <li>b = 1: Minimal abstraction, highly realistic</li>
-              <li>b = 2: Moderate abstraction</li>
-              <li>b = 4: Extreme abstraction or surrealism</li>
+              <li>b > 0: Positive abstraction (transcendent, elevating)</li>
+              <li>b = 0: Neutral abstraction</li>
+              <li>b < 0: Negative abstraction (subversive, unsettling)</li>
             </ul>
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-6">
+          <div class="glass-card p-6 hover:border-green-500">
+            <h3 class="font-bold text-green-400 mb-3">Understanding the Quadrants</h3>
+            <p class="text-gray-300">
+              The complex plane is divided into four quadrants, each representing a different combination of context and abstraction:
+            </p>
+            <ul class="list-disc list-inside mt-4 text-gray-300 space-y-1">
+              <li><strong>Quadrant I (+a, +b):</strong> Conventional context with positive abstraction</li>
+              <li><strong>Quadrant II (-a, +b):</strong> Unconventional context with positive abstraction</li>
+              <li><strong>Quadrant III (-a, -b):</strong> Unconventional context with negative abstraction</li>
+              <li><strong>Quadrant IV (+a, -b):</strong> Conventional context with negative abstraction</li>
+            </ul>
+          </div>
+          
+          <div class="glass-card p-6 hover:border-yellow-500">
+            <h3 class="font-bold text-yellow-400 mb-3">Fractional Values</h3>
+            <p class="text-gray-300">
+              Both the context normality (a) and cuil level (b) are expressed with precise fractional values,
+              allowing for nuanced positioning of each work in the complex plane. This creates a continuous
+              spectrum rather than discrete categories.
+            </p>
+            <p class="text-gray-300 mt-4">
+              The magnitude of each value (distance from zero) indicates the intensity of the conventional/unconventional
+              nature and the degree of abstraction, respectively.
+            </p>
           </div>
         </div>
       </div>

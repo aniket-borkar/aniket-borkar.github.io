@@ -37,7 +37,7 @@ function showWorkSelectionPanel(works, x, y) {
   
   const title = document.createElement('h3');
   title.className = 'text-lg font-bold text-white';
-  title.textContent = `Works at (${works[0].a}, ${works[0].b}i)`;
+  title.textContent = `Works at (${works[0].a.toFixed(1)}, ${works[0].b.toFixed(1)}i)`;
   
   const closeButton = document.createElement('button');
   closeButton.className = 'text-gray-400 hover:text-white transition-colors';
@@ -104,8 +104,11 @@ function showWorkSelectionPanel(works, x, y) {
 function getDescriptionForWork(work) {
   if (!work) return '';
   
+  // Use the extensive descriptions we've added
   return descriptions[work.name] || 
-    `A ${work.type.toLowerCase()} work with ${work.a < 0 ? 'unconventional' : 'conventional'} context and ${work.b > 2 ? 'high' : 'moderate'} levels of abstraction.`;
+    `A ${work.type.toLowerCase()} work with ${work.a < 0 ? 'unconventional' : 'conventional'} context and ${
+    work.b > 0 ? (work.b > 2 ? 'high positive' : 'moderate positive') : (work.b < -2 ? 'high negative' : 'moderate negative')
+    } levels of abstraction.`;
 }
 
 /**
@@ -116,12 +119,30 @@ function updateWorkDetails(work) {
   const workDetailsContainer = document.getElementById('work-details');
   const description = getDescriptionForWork(work);
   
+  // Determine which quadrant the work is in
+  let quadrant = "";
+  if (work.a >= 0 && work.b >= 0) quadrant = "Quadrant I";
+  else if (work.a < 0 && work.b >= 0) quadrant = "Quadrant II";
+  else if (work.a < 0 && work.b < 0) quadrant = "Quadrant III";
+  else quadrant = "Quadrant IV";
+  
+  // Define labels for the abstraction scale based on quadrant
+  let abstractionLabels = [];
+  if (work.b >= 0) {
+    abstractionLabels = ["Minimal", "Moderate", "Highly Abstract"];
+  } else {
+    abstractionLabels = ["Minimal", "Moderate", "Highly Subversive"];
+  }
+  
   workDetailsContainer.innerHTML = `
     <h2 class="text-xl font-bold text-white mb-3">${work.name}</h2>
     
     <div class="mb-4">
       <span class="category-badge ${typeBgColors[work.type] || "bg-gray-500 bg-opacity-20 text-gray-300"}">
         ${work.type}
+      </span>
+      <span class="category-badge bg-gray-500 bg-opacity-20 text-gray-300">
+        ${quadrant}
       </span>
     </div>
     
@@ -130,17 +151,24 @@ function updateWorkDetails(work) {
     </div>
     
     <div class="glass-card p-5 mt-6">
-      <h3 class="font-semibold text-white mb-4">Cuil Analysis</h3>
+      <h3 class="font-semibold text-white mb-4">Complex Plane Analysis</h3>
+      
+      <div class="flex justify-between items-center mb-2">
+        <span class="text-sm text-gray-300">Position:</span>
+        <span class="font-medium text-white">${work.a.toFixed(2)} + ${work.b.toFixed(2)}i</span>
+      </div>
+      
+      <div class="mb-6 w-full h-px bg-gray-700"></div>
       
       <div class="flex justify-between mb-2">
         <span class="text-sm text-gray-300">Context Normality (a):</span>
-        <span class="font-medium text-white">${work.a}</span>
+        <span class="font-medium text-white">${work.a.toFixed(2)}</span>
       </div>
       
       <div class="progress-bar">
         <div 
-          class="progress-fill bg-blue-500"
-          style="width: ${((work.a + 3) / 6) * 100}%; margin-left: ${work.a < 0 ? '50%' : '0'}; margin-right: ${work.a >= 0 ? '50%' : '0'};"
+          class="progress-fill ${work.a >= 0 ? 'bg-blue-500' : 'bg-purple-500'}"
+          style="width: ${Math.min(Math.abs(work.a) / 4 * 50, 50)}%; margin-left: ${work.a < 0 ? '50%' : '0'}; margin-right: ${work.a >= 0 ? '50%' : '0'};"
         ></div>
       </div>
       
@@ -152,20 +180,20 @@ function updateWorkDetails(work) {
       
       <div class="flex justify-between mb-2">
         <span class="text-sm text-gray-300">Cuil Level (b):</span>
-        <span class="font-medium text-white">${work.b}</span>
+        <span class="font-medium text-white">${work.b.toFixed(2)}</span>
       </div>
       
       <div class="progress-bar">
         <div 
-          class="progress-fill bg-purple-500"
-          style="width: ${(work.b / 4) * 100}%"
+          class="progress-fill ${work.b >= 0 ? 'bg-green-500' : 'bg-red-500'}"
+          style="width: ${Math.min(Math.abs(work.b) / 4 * 50, 50)}%; margin-left: ${work.b < 0 ? '50%' : '0'}; margin-right: ${work.b >= 0 ? '50%' : '0'};"
         ></div>
       </div>
       
       <div class="text-xs text-gray-400 flex justify-between">
-        <span>Realistic</span>
+        <span>${work.b < 0 ? 'Subversive' : 'Realistic'}</span>
         <span>Moderate</span>
-        <span>Highly Abstract</span>
+        <span>${work.b < 0 ? 'Deeply Subversive' : 'Highly Abstract'}</span>
       </div>
     </div>
     

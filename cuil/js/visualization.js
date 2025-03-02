@@ -21,13 +21,13 @@ function initializeVisualization() {
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
   
-  // Find min/max values for scales
+  // Find min/max values for scales - now considering all four quadrants
   const aExtent = d3.extent(works, d => d.a);
   const bExtent = d3.extent(works, d => d.b);
   
   // Add a bit of padding to the extents
-  const aRange = [Math.min(aExtent[0], -3) - 0.5, Math.max(aExtent[1], 3) + 0.5];
-  const bRange = [Math.min(bExtent[0], 0) - 0.5, Math.max(bExtent[1], 4) + 0.5];
+  const aRange = [Math.min(aExtent[0], -3.5) - 0.5, Math.max(aExtent[1], 3.5) + 0.5];
+  const bRange = [Math.min(bExtent[0], -3.5) - 0.5, Math.max(bExtent[1], 3.5) + 0.5];
   
   // Create scales
   xScale = d3.scaleLinear()
@@ -96,6 +96,25 @@ function initializeVisualization() {
     .attr('text-anchor', 'middle')
     .attr('fill', '#ffffff')
     .text('Works of Art in the Complex Plane');
+  
+  // Add quadrant labels
+  const quadrantLabels = [
+    { text: "Q1: Conventional, Positive Abstraction", x: innerWidth * 0.75, y: innerHeight * 0.25 },
+    { text: "Q2: Unconventional, Positive Abstraction", x: innerWidth * 0.25, y: innerHeight * 0.25 },
+    { text: "Q3: Unconventional, Negative Abstraction", x: innerWidth * 0.25, y: innerHeight * 0.75 },
+    { text: "Q4: Conventional, Negative Abstraction", x: innerWidth * 0.75, y: innerHeight * 0.75 }
+  ];
+  
+  quadrantLabels.forEach(label => {
+    g.append('text')
+      .attr('class', 'quadrant-label')
+      .attr('x', label.x)
+      .attr('y', label.y)
+      .attr('text-anchor', 'middle')
+      .attr('fill', 'rgba(255, 255, 255, 0.3)')
+      .attr('font-size', '10px')
+      .text(label.text);
+  });
   
   // Add legend with plenty of space above and below
   const legendData = Object.entries(typeColors);
@@ -202,6 +221,14 @@ function initializeVisualization() {
       g.select('line[y1="' + yScale(0) + '"]')
         .attr('y1', newYScale(0))
         .attr('y2', newYScale(0));
+        
+      // Update quadrant labels
+      g.selectAll('.quadrant-label').each(function(d, i) {
+        const label = quadrantLabels[i];
+        d3.select(this)
+          .attr('x', label.x * event.transform.k + event.transform.x)
+          .attr('y', label.y * event.transform.k + event.transform.y);
+      });
     });
     
   svg.call(zoom);
@@ -232,7 +259,19 @@ function updateVisualization(animate = false) {
     .data(Array.from(worksByPosition.entries()))
     .enter()
     .append('circle')
-    .attr('class', 'work-point')
+    .attr('class', d => {
+      // Determine which quadrant the point is in
+      const a = d[1][0].a;
+      const b = d[1][0].b;
+      let quadrantClass = '';
+      
+      if (a >= 0 && b >= 0) quadrantClass = 'quadrant-1-point';
+      else if (a < 0 && b >= 0) quadrantClass = 'quadrant-2-point';
+      else if (a < 0 && b < 0) quadrantClass = 'quadrant-3-point';
+      else quadrantClass = 'quadrant-4-point';
+      
+      return `work-point ${quadrantClass}`;
+    })
     .attr('cx', d => xScale(d[1][0].a))
     .attr('cy', d => yScale(d[1][0].b))
     .attr('r', 0) // Start with radius 0 for animation
@@ -249,140 +288,113 @@ function updateVisualization(animate = false) {
     .attr('stroke', d => {
       const types = [...new Set(d[1].map(w => w.type))];
       if (types.length > 1) {
-        return typeColors[types[0]] || '#718096';
+        return 'rgba(255, 255, 255, 0.8)';
+      } else {
+        return 'none';
       }
-      return (selectedWork && d[1].some(w => w.name === selectedWork.name)) ? '#ffffff' : 'none';
     })
     .attr('stroke-width', d => {
-      const types = [...new Set(d[1].map(w => w.type))];
-      return (selectedWork && d[1].some(w => w.name === selectedWork.name)) ? 3 : types.length > 1 ? 2 : 0;
+      return d[1].length > 1 ? 2 : 0;
     })
     .style('opacity', 0) // Start with opacity 0 for animation
     .on('mouseover', function(event, d) {
+      // Highlight the point
       d3.select(this)
-        .attr('r', 12)
-        .attr('stroke', 'rgba(255, 255, 255, 0.8)')
-        .attr('stroke-width', 2);
-      
+        .transition()
+        .duration(300)
+        .attr('r', 12);
+        
+      // Show tooltip with basic info
       const works = d[1];
-      const position = `(${works[0].a}, ${works[0].b}i)`;
-      
-      let tooltipContent = `
-        <div class="font-medium text-white">${works.length} work${works.length > 1 ? 's' : ''} at ${position}</div>
-      `;
-      
-      if (works.length <= 3) {
-        tooltipContent += `<div class="text-gray-300 text-xs mt-1">${works.map(w => w.name).join(', ')}</div>`;
-      } else {
-        tooltipContent += `<div class="text-gray-300 text-xs mt-1">${works.slice(0, 2).map(w => w.name).join(', ')} and ${works.length - 2} more...</div>`;
-      }
-      
-      tooltip.innerHTML = tooltipContent;
+      const firstWork = works[0];
       
       tooltip.style.opacity = 1;
       tooltip.style.transform = 'translateY(0)';
-      tooltip.style.left = `${event.pageX + 15}px`;
-      tooltip.style.top = `${event.pageY - 15}px`;
-    })
-    .on('mousemove', function(event) {
-      tooltip.style.left = `${event.pageX + 15}px`;
-      tooltip.style.top = `${event.pageY - 15}px`;
+      
+      tooltip.innerHTML = `
+        <div class="font-semibold">(${firstWork.a.toFixed(2)}, ${firstWork.b.toFixed(2)}i)</div>
+        <div class="mt-1 text-xs text-gray-400">Click to view details</div>
+        ${works.length > 1 ? `<div class="mt-2 text-sm">${works.length} works at this position</div>` : ''}
+        <div class="mt-2">${firstWork.name}</div>
+        <div class="text-xs mt-1">${firstWork.type}</div>
+      `;
+      
+      const tooltipWidth = tooltip.offsetWidth;
+      const tooltipHeight = tooltip.offsetHeight;
+      const x = event.pageX;
+      const y = event.pageY;
+      
+      tooltip.style.left = `${x - tooltipWidth / 2}px`;
+      tooltip.style.top = `${y - tooltipHeight - 15}px`;
     })
     .on('mouseout', function() {
+      // Restore the point size unless it's selected
+      const pointData = d3.select(this).datum();
+      const isSelected = selectedWork && pointData[1].some(w => w.name === selectedWork.name);
+      
       d3.select(this)
-        .attr('r', d => d[1].length > 1 ? 10 : 8)
-        .attr('stroke', d => {
-          const types = [...new Set(d[1].map(w => w.type))];
-          if (types.length > 1) {
-            return typeColors[types[0]] || '#718096';
-          }
-          return (selectedWork && d[1].some(w => w.name === selectedWork.name)) ? '#ffffff' : 'none';
-        })
-        .attr('stroke-width', d => {
-          const types = [...new Set(d[1].map(w => w.type))];
-          return (selectedWork && d[1].some(w => w.name === selectedWork.name)) ? 3 : types.length > 1 ? 2 : 0;
-        });
+        .transition()
+        .duration(300)
+        .attr('r', isSelected ? 10 : 8);
         
+      // Hide tooltip
       tooltip.style.opacity = 0;
       tooltip.style.transform = 'translateY(10px)';
     })
     .on('click', function(event, d) {
       const works = d[1];
       
-      // If only one work at this position, select it directly
       if (works.length === 1) {
+        // If only one work at this position, show its details directly
         selectedWork = works[0];
-        updateWorkDetails(works[0]);
+        updateWorkDetails(selectedWork);
         
-        // Update selection styling
+        // Update selection styling for all points
         svg.selectAll('.work-point')
           .attr('stroke', d => (selectedWork && d[1].some(w => w.name === selectedWork.name)) ? '#ffffff' : 'none')
           .attr('stroke-width', d => (selectedWork && d[1].some(w => w.name === selectedWork.name)) ? 3 : 0);
       } else {
-        // Show work selection panel for multiple works
+        // If multiple works, show selection panel
         showWorkSelectionPanel(works, event.pageX, event.pageY);
       }
-        
-      // Add a pulse animation to the selected point
-      d3.select(this)
-        .attr('r', 12)
-        .transition()
-        .duration(300)
-        .attr('r', works.length > 1 ? 10 : 8)
-        .transition()
-        .duration(300)
-        .attr('r', works.length > 1 ? 12 : 10);
     });
-  
-  // Animate points appearing
+    
+  // Animate the points if requested
   if (animate) {
     points.transition()
       .duration(800)
-      .delay((d, i) => i * 20)
-      .attr('r', d => d[1].length > 1 ? 10 : 8)
-      .style('opacity', 0.9);
+      .delay((d, i) => i * 10)
+      .attr('r', 8)
+      .style('opacity', 1);
   } else {
-    points.attr('r', d => d[1].length > 1 ? 10 : 8).style('opacity', 0.9);
+    points.attr('r', 8)
+      .style('opacity', 1);
   }
   
-  // Add connecting lines between points of the same type
-  const lineGenerator = d3.line()
-    .x(d => xScale(d.a))
-    .y(d => yScale(d.b))
-    .curve(d3.curveCatmullRom.alpha(0.5));
-    
-  // Group works by type
-  const worksByType = d3.group(filteredWorks, d => d.type);
+  // Draw lines connecting works of the same type if there are enough points
+  const typeGroups = d3.group(filteredWorks, d => d.type);
   
-  // Add lines for each type
-  worksByType.forEach((works, type) => {
-    // Sort works by a value to create a more natural path
-    const sortedWorks = [...works].sort((a, b) => a.a - b.a);
-    
-    if (sortedWorks.length > 2) {
-      const path = g.select('.points').append('path')
+  typeGroups.forEach((works, type) => {
+    if (works.length >= 3) {
+      // Sort works by a value to create a smoother line
+      const sortedWorks = [...works].sort((a, b) => a.a - b.a);
+      
+      // Create a line generator
+      const line = d3.line()
+        .x(d => xScale(d.a))
+        .y(d => yScale(d.b))
+        .curve(d3.curveCatmullRom.alpha(0.5));
+      
+      // Add line
+      g.select('.points').append('path')
         .datum(sortedWorks)
         .attr('class', 'type-line')
-        .attr('d', lineGenerator)
+        .attr('d', line)
         .attr('fill', 'none')
-        .attr('stroke', typeColors[type])
+        .attr('stroke', typeColors[type] || '#718096')
         .attr('stroke-width', 1.5)
-        .attr('stroke-opacity', 0.3)
-        .attr('stroke-dasharray', function() {
-          const length = this.getTotalLength();
-          return `${length} ${length}`;
-        })
-        .attr('stroke-dashoffset', function() {
-          return this.getTotalLength();
-        });
-        
-      if (animate) {
-        path.transition()
-          .duration(1500)
-          .attr('stroke-dashoffset', 0);
-      } else {
-        path.attr('stroke-dashoffset', 0);
-      }
+        .attr('stroke-dasharray', '5,5')
+        .attr('stroke-opacity', 0.5);
     }
   });
 } 

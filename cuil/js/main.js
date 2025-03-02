@@ -16,6 +16,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // Add the particle effect to the background
   createParticles();
   
+  // Set current year in footer
+  const currentYearElement = document.getElementById('current-year');
+  if (currentYearElement) {
+    currentYearElement.setAttribute('data-year', new Date().getFullYear());
+  }
+  
   // Add event listener for window resize to handle responsiveness
   window.addEventListener('resize', () => {
     // Debounce resize handler to avoid unnecessary redraws
