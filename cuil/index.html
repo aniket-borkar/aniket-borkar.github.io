@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cuil Visualization - Art in the Complex Plane</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="css/styles.css" rel="stylesheet">
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+  <div class="animated-bg">
+    <div class="bg-shape" style="width: 600px; height: 600px; background: #7f5af0; top: -100px; left: -100px;"></div>
+    <div class="bg-shape" style="width: 500px; height: 500px; background: #2cb67d; bottom: -100px; right: -100px;"></div>
+    <div class="bg-shape" style="width: 400px; height: 400px; background: #ff8906; top: 50%; left: 50%; transform: translate(-50%, -50%);"></div>
+  </div>
+
+  <header class="bg-gradient shadow-lg">
+    <div class="container mx-auto px-6 py-8">
+      <h1 class="text-4xl font-bold text-white mb-2 fade-in">Cuil Visualization</h1>
+      <p class="text-gray-300 mt-2 fade-in delay-1">Exploring the abstract dimensions of art in the complex plane</p>
+    </div>
+  </header>
+
+  <main class="container mx-auto px-4 py-12">
+    <div class="glass-card p-8 mb-12 fade-in delay-2">
+      <h2 class="text-2xl font-bold text-white mb-6">Understanding Cuil Levels in Art</h2>
+      
+      <div class="max-w-none">
+        <p class="text-gray-300 mb-6">
+          This visualization maps works of art in the complex plane, where each work is represented
+          by a complex number <strong class="text-white">z = a + bi</strong>, revealing hidden patterns in artistic expression.
+        </p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-6">
+          <div class="glass-card p-6 hover:border-blue-500">
+            <h3 class="font-bold text-blue-400 mb-3">Context Normality (a)</h3>
+            <p class="text-gray-300">
+              The real part <strong class="text-white">a</strong> reflects how conventional or unconventional the
+              context of the work is. Values range from highly negative (unconventional
+              contexts) to highly positive (conventional contexts).
+            </p>
+            <ul class="list-disc list-inside mt-4 text-gray-300 space-y-1">
+              <li>a = 2: Very conventional context</li>
+              <li>a = 0: Neutral context</li>
+              <li>a = -2: Very unconventional context</li>
+            </ul>
+          </div>
+          
+          <div class="glass-card p-6 hover:border-purple-500">
+            <h3 class="font-bold text-purple-400 mb-3">Cuil Level (b)</h3>
+            <p class="text-gray-300">
+              The imaginary part <strong class="text-white">b</strong> represents the "cuil level" — the degree of abstraction,
+              surrealism, or departure from reality in the work's presentation.
+            </p>
+            <ul class="list-disc list-inside mt-4 text-gray-300 space-y-1">
+              <li>b = 1: Minimal abstraction, highly realistic</li>
+              <li>b = 2: Moderate abstraction</li>
+              <li>b = 4: Extreme abstraction or surrealism</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+      <div class="lg:col-span-3">
+        <div class="glass-card p-6 mb-6 fade-in delay-3">
+          <h3 class="text-sm font-semibold text-gray-300 mb-4">Filter by category:</h3>
+          <div id="category-filters" class="flex flex-wrap gap-3"></div>
+        </div>
+        
+        <div class="complex-plane fade-in delay-3">
+          <svg id="visualization" width="100%" height="100%"></svg>
+        </div>
+      </div>
+      
+      <div>
+        <div id="work-details" class="glass-card p-8 fade-in delay-3">
+          <h2 class="text-xl font-bold text-white mb-4">Work Details</h2>
+          <p class="text-gray-300">Select a work from the visualization to see details.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="bg-gradient py-8 mt-12">
+    <div class="container mx-auto px-6">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <div class="mb-6 md:mb-0">
+          <p class="text-sm text-gray-300">
+            © <span id="current-year"></span> Cuil Visualization Project
+          </p>
+        </div>
+        
+        <div class="flex space-x-6">
+          <a href="#" class="text-sm text-gray-300 hover:text-white transition-colors">About the Project</a>
+          <a href="#" class="text-sm text-gray-300 hover:text-white transition-colors">Methodology</a>
+          <a href="#" class="text-sm text-gray-300 hover:text-white transition-colors">Contact</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Import JS modules -->
+  <script src="js/data.js"></script>
+  <script src="js/visualization.js"></script>
+  <script src="js/interactions.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
