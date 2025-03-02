@@ -167,6 +167,12 @@ function visualizeMetrics(metricType = 'magnitude') {
   const worksWithMetrics = generateMetricsForSelectedWorks();
   console.log('Selected works for metrics:', worksWithMetrics.length);
   
+  // Show mathematical metrics explanation
+  const metricsExplanation = document.getElementById('mathematical-metrics');
+  if (metricsExplanation) {
+    metricsExplanation.style.display = 'block';
+  }
+  
   // First check if we have works selected
   if (worksWithMetrics.length === 0) {
     console.log('No works selected, showing message');
@@ -238,6 +244,12 @@ function visualizeMetrics(metricType = 'magnitude') {
     closeButton.innerHTML = '&times;';
     closeButton.onclick = () => {
       metricsContainer.style.display = 'none';
+      
+      // Hide the mathematical metrics explanation
+      const metricsExplanation = document.getElementById('mathematical-metrics');
+      if (metricsExplanation) {
+        metricsExplanation.style.display = 'none';
+      }
     };
     
     // Add clear selection button
@@ -247,6 +259,12 @@ function visualizeMetrics(metricType = 'magnitude') {
     clearButton.onclick = () => {
       clearSelectedWorks();
       metricsContainer.style.display = 'none';
+      
+      // Hide the mathematical metrics explanation
+      const metricsExplanation = document.getElementById('mathematical-metrics');
+      if (metricsExplanation) {
+        metricsExplanation.style.display = 'none';
+      }
     };
     
     // Add elements to the header
@@ -656,6 +674,12 @@ function showMessage(message) {
  * Initialize the metrics functionality
  */
 function initializeMetrics() {
+  // Hide the mathematical metrics explanation initially
+  const metricsExplanation = document.getElementById('mathematical-metrics');
+  if (metricsExplanation) {
+    metricsExplanation.style.display = 'none';
+  }
+
   // Add button to work details panel to add/remove from metrics selection
   const addButton = document.createElement('button');
   addButton.id = 'add-to-metrics-button';

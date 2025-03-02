@@ -110,6 +110,62 @@
             achieving positive abstraction.
           </p>
         </div>
+        
+        <div id="mathematical-metrics" class="glass-card p-6 hover:border-purple-300 mt-6" style="display: none;">
+          <h3 class="font-bold text-purple-300 mb-3">Advanced Mathematical Metrics</h3>
+          <p class="text-gray-300">
+            The complex plane representation allows for mathematical analysis of artistic works through several key metrics:
+          </p>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+            <div class="bg-gray-800 bg-opacity-40 p-4 rounded-lg">
+              <h4 class="font-bold text-white mb-2">Magnitude (|z|)</h4>
+              <p class="text-gray-300 text-sm">
+                The distance from the origin to a work's position: |z| = √(a² + b²)
+              </p>
+              <p class="text-gray-300 text-sm mt-2">
+                Represents the overall intensity of artistic expression. Works with higher magnitude express more extreme positions
+                on either context, abstraction, or both. Works with lower magnitude express more moderate, balanced approaches.
+              </p>
+            </div>
+            
+            <div class="bg-gray-800 bg-opacity-40 p-4 rounded-lg">
+              <h4 class="font-bold text-white mb-2">Phase Angle (θ)</h4>
+              <p class="text-gray-300 text-sm">
+                The angle formed with the positive real axis: θ = atan2(b, a)
+              </p>
+              <p class="text-gray-300 text-sm mt-2">
+                Indicates the relative balance between context normality and cuil level. Each quadrant has a characteristic range of angles:
+                <span class="block mt-1">• Quadrant I: 0° to 90°</span>
+                <span class="block">• Quadrant II: 90° to 180°</span>
+                <span class="block">• Quadrant III: -180° to -90°</span>
+                <span class="block">• Quadrant IV: -90° to 0°</span>
+              </p>
+            </div>
+            
+            <div class="bg-gray-800 bg-opacity-40 p-4 rounded-lg">
+              <h4 class="font-bold text-white mb-2">Artistic Intensity</h4>
+              <p class="text-gray-300 text-sm">
+                Normalized magnitude as a percentage of maximum expected magnitude.
+              </p>
+              <p class="text-gray-300 text-sm mt-2">
+                Provides a standardized measure of a work's overall artistic impact, regardless of which quadrant it occupies.
+                High intensity works make strong artistic statements, while low intensity works tend toward more moderate expression.
+              </p>
+            </div>
+            
+            <div class="bg-gray-800 bg-opacity-40 p-4 rounded-lg">
+              <h4 class="font-bold text-white mb-2">Context vs. Abstraction Dominance</h4>
+              <p class="text-gray-300 text-sm">
+                Ratio of context contribution to total position: |a| / (|a| + |b|)
+              </p>
+              <p class="text-gray-300 text-sm mt-2">
+                Reveals whether a work is more defined by its context (high ratio) or its level of abstraction (low ratio).
+                A value of 0.5 indicates equal influence of both dimensions, while values approaching 1 suggest context dominates,
+                and values approaching 0 suggest abstraction dominates.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 

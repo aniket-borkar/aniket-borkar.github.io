@@ -758,4 +758,46 @@ function clearSearch() {
   }
   
   updateVisualization(true);
+}
+
+/**
+ * Initialize interaction handlers for the visualization
+ */
+function initializeInteractions() {
+  // ... existing code ...
+
+  // Keyboard shortcuts
+  document.addEventListener('keydown', function(event) {
+    // 'Escape' key to reset zoom and pan
+    if (event.key === 'Escape') {
+      resetView();
+    }
+    
+    // 'M' key to toggle metrics visualization 
+    if (event.key === 'm' || event.key === 'M') {
+      const metricsContainer = document.getElementById('metrics-charts-container');
+      if (metricsContainer) {
+        // If metrics container exists but is hidden or doesn't have enough selected works
+        if (metricsContainer.style.display === 'none') {
+          const selectedWorks = getSelectedWorksArray();
+          if (selectedWorks.length > 0) {
+            visualizeMetrics('magnitude'); // Show metrics with default view
+          } else {
+            showMessage('Please select at least one work first');
+          }
+        } else {
+          // Hide metrics if already showing
+          metricsContainer.style.display = 'none';
+          
+          // Also hide the explanation
+          const metricsExplanation = document.getElementById('mathematical-metrics');
+          if (metricsExplanation) {
+            metricsExplanation.style.display = 'none';
+          }
+        }
+      }
+    }
+  });
+
+  // ... existing code ...
 } 
