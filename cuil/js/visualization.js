@@ -203,16 +203,6 @@ function initializeVisualization() {
         .attr('cx', d => newXScale(d[1][0].a))
         .attr('cy', d => newYScale(d[1][0].b));
       
-      // Update the lines if they exist
-      g.selectAll('.type-line').each(function(d) {
-        const line = d3.line()
-          .x(d => newXScale(d.a))
-          .y(d => newYScale(d.b))
-          .curve(d3.curveCatmullRom.alpha(0.5));
-        
-        d3.select(this).attr('d', line);
-      });
-      
       // Update origin lines
       g.selectAll('.origin-line').filter(function() {
         return this.getAttribute('x1') === this.getAttribute('x2');
@@ -241,8 +231,8 @@ function initializeVisualization() {
  * @param {boolean} animate - Whether to animate the points
  */
 function updateVisualization(animate = false) {
-  // Clear previous points and lines
-  g.selectAll('.work-point, .type-line').remove();
+  // Clear previous points
+  g.selectAll('.work-point').remove();
   
   // Filter works based on selected categories and search term
   let filteredWorks = works;
@@ -508,31 +498,4 @@ function updateVisualization(animate = false) {
         }
       });
   }
-  
-  // Draw lines connecting works of the same type if there are enough points
-  const typeGroups = d3.group(filteredWorks, d => d.type);
-  
-  typeGroups.forEach((works, type) => {
-    if (works.length >= 3) {
-      // Sort works by a value to create a smoother line
-      const sortedWorks = [...works].sort((a, b) => a.a - b.a);
-      
-      // Create a line generator
-      const line = d3.line()
-        .x(d => xScale(d.a))
-        .y(d => yScale(d.b))
-        .curve(d3.curveCatmullRom.alpha(0.5));
-      
-      // Add line
-      g.select('.points').append('path')
-        .datum(sortedWorks)
-        .attr('class', 'type-line')
-        .attr('d', line)
-        .attr('fill', 'none')
-        .attr('stroke', typeColors[type] || '#718096')
-        .attr('stroke-width', 1.5)
-        .attr('stroke-dasharray', '5,5')
-        .attr('stroke-opacity', 0.5);
-    }
-  });
 } 
