@@ -137,7 +137,7 @@ function updateWorkSelections() {
  * @returns {Array} - Array of selected work objects
  */
 function getSelectedWorksArray() {
-  return allWorks.filter(work => isWorkSelectedForMetrics(work));
+  return works.filter(work => isWorkSelectedForMetrics(work));
 }
 
 /**

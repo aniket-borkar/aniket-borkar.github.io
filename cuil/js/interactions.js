@@ -97,10 +97,10 @@ function showWorkSelectionPanel(works, x, y) {
     works.sort((a, b) => {
       const aMatches = a.name.toLowerCase().includes(searchTerm) || 
                       a.type.toLowerCase().includes(searchTerm) ||
-                      (window.descriptions[a.name] && window.descriptions[a.name].toLowerCase().includes(searchTerm));
+                      (descriptions[a.name] && descriptions[a.name].toLowerCase().includes(searchTerm));
       const bMatches = b.name.toLowerCase().includes(searchTerm) || 
                       b.type.toLowerCase().includes(searchTerm) ||
-                      (window.descriptions[b.name] && window.descriptions[b.name].toLowerCase().includes(searchTerm));
+                      (descriptions[b.name] && descriptions[b.name].toLowerCase().includes(searchTerm));
                       
       return bMatches - aMatches; // true (1) values first, false (0) values last
     });
@@ -136,7 +136,7 @@ function showWorkSelectionPanel(works, x, y) {
     const isSearchMatch = isSearching && (
       work.name.toLowerCase().includes(searchTerm) || 
       work.type.toLowerCase().includes(searchTerm) ||
-      (window.descriptions[work.name] && window.descriptions[work.name].toLowerCase().includes(searchTerm))
+      (descriptions[work.name] && descriptions[work.name].toLowerCase().includes(searchTerm))
     );
     
     const isSelectedForMetricsNow = isWorkSelectedForMetrics(work);
@@ -283,7 +283,7 @@ function getDescriptionForWork(work) {
   if (!work) return '';
   
   // Use the extensive descriptions we've added
-  return window.descriptions[work.name] || 
+  return descriptions[work.name] || 
     `A ${work.type.toLowerCase()} work with ${work.a < 0 ? 'unconventional' : 'conventional'} context and ${
     work.b > 0 ? (work.b > 2 ? 'high positive' : 'moderate positive') : (work.b < -2 ? 'intense hyper-realistic' : 'moderately hyper-realistic')
     } levels of abstraction.`;
@@ -322,7 +322,7 @@ function updateWorkDetails(work) {
   const isSearchMatch = searchTerm && searchTerm.length > 0 && (
     work.name.toLowerCase().includes(searchTerm) || 
     work.type.toLowerCase().includes(searchTerm) ||
-    (window.descriptions[work.name] && window.descriptions[work.name].toLowerCase().includes(searchTerm))
+    (descriptions[work.name] && descriptions[work.name].toLowerCase().includes(searchTerm))
   );
   
   // Calculate metrics for this work
@@ -514,7 +514,7 @@ function initializeUI() {
   clearSearchButton.addEventListener('click', clearSearch);
   
   // Generate category filter buttons
-  window.categories.forEach(category => {
+  categories.forEach(category => {
     const button = document.createElement('button');
     button.className = 'filter-button px-4 py-2 rounded-full text-xs font-medium border transition-colors duration-300 bg-opacity-10 text-gray-300 border-gray-700 hover:bg-opacity-20';
     button.textContent = category;
@@ -703,10 +703,10 @@ function handleSearch() {
     searchInput.classList.add('border-blue-500');
     
     // Check if we need to show "no results" message
-    const matchingWorks = window.allWorks.filter(work => 
+    const matchingWorks = works.filter(work => 
       work.name.toLowerCase().includes(searchTerm) || 
       work.type.toLowerCase().includes(searchTerm) ||
-      (window.descriptions[work.name] && window.descriptions[work.name].toLowerCase().includes(searchTerm))
+      (descriptions[work.name] && descriptions[work.name].toLowerCase().includes(searchTerm))
     );
     
     // Show a feedback message next to the search input
