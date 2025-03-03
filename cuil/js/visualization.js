@@ -22,8 +22,8 @@ function initializeVisualization() {
   const innerHeight = height - margin.top - margin.bottom;
   
   // Find min/max values for scales - now considering all four quadrants
-  const aExtent = d3.extent(works, d => d.a);
-  const bExtent = d3.extent(works, d => d.b);
+  const aExtent = d3.extent(window.allWorks, d => d.a);
+  const bExtent = d3.extent(window.allWorks, d => d.b);
   
   // Add a bit of padding to the extents
   const aRange = [Math.min(aExtent[0], -3.5) - 0.5, Math.max(aExtent[1], 3.5) + 0.5];
@@ -245,7 +245,7 @@ function updateVisualization(animate = false) {
   g.selectAll('.work-point, .type-line').remove();
   
   // Filter works based on selected categories and search term
-  let filteredWorks = works;
+  let filteredWorks = window.allWorks;
   
   // Apply category filter if any categories are selected
   if (selectedCategories.size > 0) {
@@ -257,9 +257,12 @@ function updateVisualization(animate = false) {
     filteredWorks = filteredWorks.filter(work => 
       work.name.toLowerCase().includes(searchTerm) || 
       work.type.toLowerCase().includes(searchTerm) ||
-      (descriptions[work.name] && descriptions[work.name].toLowerCase().includes(searchTerm))
+      (window.descriptions[work.name] && window.descriptions[work.name].toLowerCase().includes(searchTerm))
     );
   }
+  
+  // Log the number of filtered works
+  console.log("Number of works being displayed:", filteredWorks.length);
   
   // Update clear button visibility
   const clearButton = categoryFiltersContainer.querySelector('button:last-child');
@@ -301,7 +304,7 @@ function updateVisualization(animate = false) {
       const isSearchMatch = searchTerm && d[1].some(work => 
         work.name.toLowerCase().includes(searchTerm) || 
         work.type.toLowerCase().includes(searchTerm) ||
-        (descriptions[work.name] && descriptions[work.name].toLowerCase().includes(searchTerm))
+        (window.descriptions[work.name] && window.descriptions[work.name].toLowerCase().includes(searchTerm))
       );
       
       // If multiple types at this position, use a different opacity
@@ -332,7 +335,7 @@ function updateVisualization(animate = false) {
       const isSearchMatch = searchTerm && d[1].some(work => 
         work.name.toLowerCase().includes(searchTerm) || 
         work.type.toLowerCase().includes(searchTerm) ||
-        (descriptions[work.name] && descriptions[work.name].toLowerCase().includes(searchTerm))
+        (window.descriptions[work.name] && window.descriptions[work.name].toLowerCase().includes(searchTerm))
       );
       
       // Check if any work at this position is selected for metrics
@@ -355,7 +358,7 @@ function updateVisualization(animate = false) {
       const isSearchMatch = searchTerm && d[1].some(work => 
         work.name.toLowerCase().includes(searchTerm) || 
         work.type.toLowerCase().includes(searchTerm) ||
-        (descriptions[work.name] && descriptions[work.name].toLowerCase().includes(searchTerm))
+        (window.descriptions[work.name] && window.descriptions[work.name].toLowerCase().includes(searchTerm))
       );
       
       // Check if any work at this position is selected for metrics
@@ -470,7 +473,7 @@ function updateVisualization(animate = false) {
         const isSearchMatch = searchTerm && d[1].some(work => 
           work.name.toLowerCase().includes(searchTerm) || 
           work.type.toLowerCase().includes(searchTerm) ||
-          (descriptions[work.name] && descriptions[work.name].toLowerCase().includes(searchTerm))
+          (window.descriptions[work.name] && window.descriptions[work.name].toLowerCase().includes(searchTerm))
         );
         
         const isSelectedForMetrics = d[1].some(work => isWorkSelectedForMetrics(work));
@@ -494,7 +497,7 @@ function updateVisualization(animate = false) {
         const isSearchMatch = searchTerm && d[1].some(work => 
           work.name.toLowerCase().includes(searchTerm) || 
           work.type.toLowerCase().includes(searchTerm) ||
-          (descriptions[work.name] && descriptions[work.name].toLowerCase().includes(searchTerm))
+          (window.descriptions[work.name] && window.descriptions[work.name].toLowerCase().includes(searchTerm))
         );
         
         const isSelectedForMetrics = d[1].some(work => isWorkSelectedForMetrics(work));
@@ -508,31 +511,4 @@ function updateVisualization(animate = false) {
         }
       });
   }
-  
-  // Draw lines connecting works of the same type if there are enough points
-  const typeGroups = d3.group(filteredWorks, d => d.type);
-  
-  typeGroups.forEach((works, type) => {
-    if (works.length >= 3) {
-      // Sort works by a value to create a smoother line
-      const sortedWorks = [...works].sort((a, b) => a.a - b.a);
-      
-      // Create a line generator
-      const line = d3.line()
-        .x(d => xScale(d.a))
-        .y(d => yScale(d.b))
-        .curve(d3.curveCatmullRom.alpha(0.5));
-      
-      // Add line
-      g.select('.points').append('path')
-        .datum(sortedWorks)
-        .attr('class', 'type-line')
-        .attr('d', line)
-        .attr('fill', 'none')
-        .attr('stroke', typeColors[type] || '#718096')
-        .attr('stroke-width', 1.5)
-        .attr('stroke-dasharray', '5,5')
-        .attr('stroke-opacity', 0.5);
-    }
-  });
 } 
