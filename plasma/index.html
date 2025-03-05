@@ -30,11 +30,45 @@
         /* Canvas fixes */
         canvas {
             width: 100%;
-            height: 350px;
+            height: 450px !important;
             background-color: #030303;
-            border-radius: 8px;
-            margin-bottom: 1rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
             display: block;
+            box-shadow: 0 0 30px rgba(156, 39, 176, 0.3);
+            border: 1px solid rgba(156, 39, 176, 0.3);
+        }
+        
+        /* Particle animation for hero section */
+        @keyframes particle-float {
+            0%, 100% {
+                transform: translateY(0) translateX(0);
+                opacity: 0.3;
+            }
+            25% {
+                transform: translateY(-20px) translateX(10px);
+                opacity: 0.7;
+            }
+            50% {
+                transform: translateY(-40px) translateX(-15px);
+                opacity: 0.3;
+            }
+            75% {
+                transform: translateY(-20px) translateX(-5px);
+                opacity: 0.6;
+            }
+        }
+        
+        .hero-particle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            filter: blur(2px);
+            opacity: 0;
+            z-index: 1;
+            pointer-events: none;
+            animation: particle-float 8s infinite;
         }
     </style>
 </head>
@@ -63,46 +97,56 @@
     </header>
 
     <section id="intro" class="hero">
+        <div class="particle-container" id="hero-particles">
+            <!-- Dynamic particles will be added here by JavaScript -->
+        </div>
         <div class="container">
             <div class="hero-content">
                 <h2>Discover <span class="highlight">Plasma</span></h2>
                 <h3>The Fourth State of Matter</h3>
-                <p>Beyond solid, liquid, and gas, plasma makes up 99% of the visible universe.</p>
-                <a href="#what-is-plasma" class="btn btn-primary">Learn More</a>
+                <p>Beyond solid, liquid, and gas, plasma makes up 99% of the visible universe. From stars to lightning, this energetic state of matter powers our cosmos.</p>
+                <div class="hero-buttons">
+                    <a href="#what-is-plasma" class="btn btn-primary">Learn More</a>
+                    <a href="#interactive" class="btn btn-secondary">Try Simulations</a>
+                </div>
             </div>
-            <div class="particle-container" id="hero-particles"></div>
         </div>
+        <div class="hero-glow"></div>
     </section>
 
     <section id="what-is-plasma" class="section">
         <div class="container">
-            <div class="section-header">
+            <div class="section-header fade-in">
                 <h2>What is <span class="highlight">Plasma</span>?</h2>
                 <p class="section-subtext">The energetic fourth state of matter</p>
             </div>
             <div class="content-columns">
-                <div class="text-column">
+                <div class="text-column fade-in" style="--delay: 1">
                     <p>Plasma is often called the "fourth state of matter" - beyond the more familiar solid, liquid, and gas states. It occurs when a gas is heated to such high temperatures that electrons are stripped from atoms, creating a mixture of charged particles.</p>
                     <p>Unlike ordinary gases, plasmas conduct electricity and are strongly influenced by electromagnetic fields. This gives plasma unique properties that make it fundamental to countless natural phenomena and modern technologies.</p>
                     <p>Interestingly, plasma is the most common state of matter in the universe. Stars, including our Sun, are primarily made of plasma, and it's found throughout interstellar space.</p>
                 </div>
-                <div class="visual-column">
+                <div class="visual-column fade-in" style="--delay: 2">
                     <div class="states-of-matter">
                         <div class="state-card">
                             <div class="state-icon solid"></div>
                             <h4>Solid</h4>
+                            <p>Fixed structure, strong bonds</p>
                         </div>
                         <div class="state-card">
                             <div class="state-icon liquid"></div>
                             <h4>Liquid</h4>
+                            <p>Flowing, takes container shape</p>
                         </div>
                         <div class="state-card">
                             <div class="state-icon gas"></div>
                             <h4>Gas</h4>
+                            <p>Free-moving molecules</p>
                         </div>
                         <div class="state-card active">
                             <div class="state-icon plasma"></div>
                             <h4>Plasma</h4>
+                            <p>Ionized, electrically charged</p>
                         </div>
                     </div>
                 </div>
@@ -112,37 +156,37 @@
 
     <section id="applications" class="section alt-bg">
         <div class="container">
-            <div class="section-header">
+            <div class="section-header fade-in">
                 <h2>Applications of <span class="highlight">Plasma</span></h2>
                 <p class="section-subtext">How plasma technology shapes our modern world</p>
             </div>
             <div class="cards-container">
-                <div class="card">
+                <div class="card fade-in" style="--delay: 1">
                     <div class="card-icon"><i class="fas fa-bolt"></i></div>
                     <h3>Fusion Energy</h3>
                     <p>Scientists are working to harness fusion reactions in plasma to create clean, virtually limitless energy that mimics the processes powering our sun.</p>
                 </div>
-                <div class="card">
+                <div class="card fade-in" style="--delay: 2">
                     <div class="card-icon"><i class="fas fa-tv"></i></div>
                     <h3>Display Technology</h3>
                     <p>Plasma display panels (PDPs) use small cells containing plasma to illuminate phosphors, creating vibrant, high-contrast images.</p>
                 </div>
-                <div class="card">
+                <div class="card fade-in" style="--delay: 3">
                     <div class="card-icon"><i class="fas fa-hospital"></i></div>
                     <h3>Medical Applications</h3>
                     <p>Cold atmospheric plasma is used for sterilization, wound healing, and even cancer treatment by selectively destroying harmful cells.</p>
                 </div>
-                <div class="card">
+                <div class="card fade-in" style="--delay: 4">
                     <div class="card-icon"><i class="fas fa-microchip"></i></div>
                     <h3>Semiconductor Manufacturing</h3>
                     <p>Plasma etching and deposition are crucial in creating the intricate patterns on microchips that power our electronic devices.</p>
                 </div>
-                <div class="card">
+                <div class="card fade-in" style="--delay: 5">
                     <div class="card-icon"><i class="fas fa-rocket"></i></div>
                     <h3>Space Propulsion</h3>
                     <p>Plasma thrusters provide efficient propulsion for satellites and spacecraft, enabling longer missions in space.</p>
                 </div>
-                <div class="card">
+                <div class="card fade-in" style="--delay: 6">
                     <div class="card-icon"><i class="fas fa-trash-alt"></i></div>
                     <h3>Waste Treatment</h3>
                     <p>Plasma gasification converts waste into synthetic gas and other useful byproducts while destroying hazardous materials.</p>
@@ -153,11 +197,11 @@
 
     <section id="interactive" class="section">
         <div class="container">
-            <div class="section-header">
+            <div class="section-header fade-in">
                 <h2>Interactive <span class="highlight">Demonstrations</span></h2>
                 <p class="section-subtext">Experience plasma physics through simulations</p>
             </div>
-            <div class="interactive-container">
+            <div class="interactive-container fade-in" style="--delay: 1">
                 <div class="demo-tabs">
                     <button class="tab-btn active" data-demo="plasma-ball">Plasma Ball</button>
                     <button class="tab-btn" data-demo="solar-plasma">Solar Plasma</button>
@@ -168,7 +212,7 @@
                 </div>
                 <div class="demo-container">
                     <div class="demo active" id="plasma-ball-demo">
-                        <canvas id="plasma-ball-canvas" width="800" height="350"></canvas>
+                        <canvas id="plasma-ball-canvas" width="800" height="450"></canvas>
                         <div class="demo-controls">
                             <label>
                                 Energy Level:
@@ -178,7 +222,7 @@
                         </div>
                     </div>
                     <div class="demo" id="solar-plasma-demo">
-                        <canvas id="solar-plasma-canvas" width="800" height="350"></canvas>
+                        <canvas id="solar-plasma-canvas" width="800" height="450"></canvas>
                         <div class="demo-controls">
                             <label>
                                 Magnetic Field Strength:
@@ -188,7 +232,7 @@
                         </div>
                     </div>
                     <div class="demo" id="fusion-reactor-demo">
-                        <canvas id="fusion-reactor-canvas" width="800" height="350"></canvas>
+                        <canvas id="fusion-reactor-canvas" width="800" height="450"></canvas>
                         <div class="demo-controls">
                             <label>
                                 Temperature (million °C):
@@ -198,7 +242,7 @@
                         </div>
                     </div>
                     <div class="demo" id="plasma-waves-demo">
-                        <canvas id="plasma-waves-canvas" width="800" height="350"></canvas>
+                        <canvas id="plasma-waves-canvas" width="800" height="450"></canvas>
                         <div class="demo-controls">
                             <label>
                                 Wave Frequency:
@@ -217,9 +261,10 @@
                                 </select>
                             </div>
                         </div>
+                        <p class="canvas-instruction">Click on the canvas to create wave perturbations</p>
                     </div>
                     <div class="demo" id="z-pinch-demo">
-                        <canvas id="z-pinch-canvas" width="800" height="350"></canvas>
+                        <canvas id="z-pinch-canvas" width="800" height="450"></canvas>
                         <div class="demo-controls">
                             <label>
                                 Current Intensity:
@@ -229,7 +274,7 @@
                         </div>
                     </div>
                     <div class="demo" id="cold-plasma-demo">
-                        <canvas id="cold-plasma-canvas" width="800" height="350"></canvas>
+                        <canvas id="cold-plasma-canvas" width="800" height="450"></canvas>
                         <div class="demo-controls">
                             <label>
                                 Discharge Intensity:
@@ -249,12 +294,12 @@
 
     <section id="learn-more" class="section alt-bg">
         <div class="container">
-            <div class="section-header">
+            <div class="section-header fade-in">
                 <h2>Learn <span class="highlight">More</span></h2>
                 <p class="section-subtext">Dive deeper into the fascinating world of plasma physics</p>
             </div>
             <div class="resources-grid">
-                <div class="resource-item">
+                <div class="resource-item fade-in" style="--delay: 1">
                     <div class="resource-icon"><i class="fas fa-book"></i></div>
                     <h3>Books & Articles</h3>
                     <ul>
@@ -263,7 +308,7 @@
                         <li><a href="#" target="_blank">Plasma Universe by Peratt</a></li>
                     </ul>
                 </div>
-                <div class="resource-item">
+                <div class="resource-item fade-in" style="--delay: 2">
                     <div class="resource-icon"><i class="fas fa-video"></i></div>
                     <h3>Videos & Lectures</h3>
                     <ul>
@@ -272,7 +317,7 @@
                         <li><a href="#" target="_blank">The Promise of Fusion Energy</a></li>
                     </ul>
                 </div>
-                <div class="resource-item">
+                <div class="resource-item fade-in" style="--delay: 3">
                     <div class="resource-icon"><i class="fas fa-flask"></i></div>
                     <h3>Research Centers</h3>
                     <ul>
@@ -281,7 +326,7 @@
                         <li><a href="#" target="_blank">Max Planck Institute for Plasma Physics</a></li>
                     </ul>
                 </div>
-                <div class="resource-item">
+                <div class="resource-item fade-in" style="--delay: 4">
                     <div class="resource-icon"><i class="fas fa-microscope"></i></div>
                     <h3>Online Courses</h3>
                     <ul>
@@ -320,6 +365,57 @@
     <script src="js/plasma-simulation.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Create animated particles for hero section
+            const particleContainer = document.getElementById('hero-particles');
+            const colors = ['#d05ce3', '#ff8a50', '#757de8', '#9c27b0'];
+            
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('hero-particle');
+                
+                // Random position
+                const xPos = Math.random() * 100;
+                const yPos = Math.random() * 100;
+                
+                // Random size
+                const size = Math.random() * 10 + 3;
+                
+                // Random color
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                
+                // Random animation delay
+                const delay = Math.random() * 10;
+                
+                particle.style.left = `${xPos}%`;
+                particle.style.top = `${yPos}%`;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.backgroundColor = color;
+                particle.style.animationDelay = `${delay}s`;
+                
+                particleContainer.appendChild(particle);
+            }
+
+            // Scroll animation
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.1
+            };
+            
+            const observer = new IntersectionObserver(function(entries, observer) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+            
+            document.querySelectorAll('.fade-in').forEach(element => {
+                observer.observe(element);
+            });
+
             // Initialize demo tabs
             const demoTabs = document.querySelectorAll('.tab-btn');
             const demos = document.querySelectorAll('.demo');
@@ -369,6 +465,23 @@
                 });
             });
             
+            // Mobile menu toggle
+            const hamburger = document.querySelector('.hamburger');
+            const navMenu = document.querySelector('.nav-menu');
+            
+            hamburger?.addEventListener('click', function() {
+                hamburger.classList.toggle('active');
+                navMenu.classList.toggle('active');
+            });
+            
+            // Close mobile menu when clicking a link
+            document.querySelectorAll('.nav-menu a').forEach(link => {
+                link.addEventListener('click', function() {
+                    hamburger.classList.remove('active');
+                    navMenu.classList.remove('active');
+                });
+            });
+            
             // Function to update demo description
             function updateDemoDescription(demoId) {
                 const descriptions = {
@@ -405,25 +518,6 @@
                 if (demoTitle) demoTitle.innerText = description.title;
                 if (demoText) demoText.innerText = description.text;
             }
-            
-            // Function to test all demos in sequence (for debugging)
-            function testAllDemos() {
-                const tabs = Array.from(demoTabs);
-                let currentIndex = 0;
-                
-                function clickNextTab() {
-                    if (currentIndex < tabs.length) {
-                        console.log(`Testing demo: ${tabs[currentIndex].getAttribute('data-demo')}`);
-                        tabs[currentIndex].click();
-                        currentIndex++;
-                        setTimeout(clickNextTab, 3000); // Wait 3 seconds between tabs
-                    }
-                }
-                
-                clickNextTab();
-            }
-            // Uncomment to test all demos
-            // testAllDemos();
             
             // Show plasma waves demo by default (after a short delay to ensure scripts are loaded)
             setTimeout(() => {
