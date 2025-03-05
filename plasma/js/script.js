@@ -443,6 +443,7 @@ const tempSlider = document.getElementById('temp-slider');
 const dischargeSlider = document.getElementById('discharge-slider');
 const touchButton = document.getElementById('touch-plasma');
 const flareButton = document.getElementById('trigger-flare');
+const toggleEarthButton = document.getElementById('toggle-earth-field');
 const confineButton = document.getElementById('confine-plasma');
 const contaminantButton = document.getElementById('add-contaminant');
 
@@ -458,7 +459,7 @@ if (energySlider) {
 if (magneticSlider) {
     magneticSlider.addEventListener('input', function() {
         if (window.plasmaSimulations && window.plasmaSimulations.solarPlasma) {
-            window.plasmaSimulations.solarPlasma.setMagneticField(this.value);
+            window.plasmaSimulations.solarPlasma.setMagneticFieldStrength(this.value);
         }
     });
 }
@@ -483,6 +484,17 @@ if (flareButton) {
     flareButton.addEventListener('click', function() {
         if (window.plasmaSimulations && window.plasmaSimulations.solarPlasma) {
             window.plasmaSimulations.solarPlasma.triggerFlare();
+        }
+    });
+}
+
+// Add toggle Earth field button handler
+if (toggleEarthButton) {
+    toggleEarthButton.addEventListener('click', function() {
+        if (window.plasmaSimulations && window.plasmaSimulations.solarPlasma) {
+            window.plasmaSimulations.solarPlasma.toggleEarthField();
+            // Update button text based on state
+            this.classList.toggle('active');
         }
     });
 }

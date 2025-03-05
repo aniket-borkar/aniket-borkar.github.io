@@ -228,7 +228,10 @@
                                 Magnetic Field Strength:
                                 <input type="range" id="magnetic-slider" min="1" max="100" value="50">
                             </label>
-                            <button id="trigger-flare" class="btn btn-secondary">Trigger Solar Flare</button>
+                            <div class="button-group">
+                                <button id="trigger-flare" class="btn btn-secondary">Trigger Solar Flare</button>
+                                <button id="toggle-earth-field" class="btn btn-secondary">Toggle Earth Field</button>
+                            </div>
                         </div>
                     </div>
                     <div class="demo" id="fusion-reactor-demo">
@@ -506,8 +509,8 @@
                         text: 'Explore different types of plasma waves and their behavior. You can adjust the wave frequency, amplitude, and select between different wave types. Click directly on the canvas or use the "Add Perturbation" button to create ripple effects and see how the plasma responds to disturbances.'
                     },
                     'solar-plasma': {
-                        title: 'Solar Plasma & Magnetic Fields',
-                        text: 'This simulation demonstrates how plasma behaves in the Sun\'s atmosphere under the influence of magnetic fields. Adjust the magnetic field strength to see how it affects plasma movement and use the "Trigger Flare" button to simulate a solar flare eruption.'
+                        title: 'Solar Plasma & Earth Magnetosphere',
+                        text: 'This simulation demonstrates how plasma behaves in the Sun\'s atmosphere and its effects on Earth\'s magnetic field. Adjust the magnetic field strength to see how it affects plasma movement and use the "Trigger Solar Flare" button to launch a solar flare directed at Earth, showing how our planet\'s magnetosphere protects us from solar radiation.'
                     }
                 };
                 

@@ -519,10 +519,22 @@ function initSolarPlasma() {
     // Simulation variables
     let particles = [];
     let fieldLines = [];
+    let earthMagneticFieldLines = [];
     let magneticFieldStrength = 50; // 1-100 scale
     let flareActive = false;
     let flareTime = 0;
     let isRunning = true;
+    let showEarthField = true; // Toggle for Earth's magnetic field display
+    let simulationSpeed = 0.5; // Simulation speed multiplier (lower = slower)
+    
+    // Solar flare parameters
+    let flareAngle = Math.PI * -0.3;
+    let flareParticles = [];
+    
+    // Earth parameters
+    const earthRadius = height * 0.06;
+    const earthX = width * 0.95;
+    const earthY = height / 2;
     
     // Resize canvas and recreate elements
     function resizeCanvas() {
@@ -533,6 +545,7 @@ function initSolarPlasma() {
         // Recreate simulation elements when resized
         createParticles();
         createFieldLines();
+        createEarthMagneticField();
         
         // Force a redraw
         drawSolarPlasma();
@@ -541,7 +554,7 @@ function initSolarPlasma() {
     // Create plasma particles
     function createParticles() {
         particles = [];
-        const numParticles = 150;
+        const numParticles = 30; // Reduced from 150 to 30
         
         for (let i = 0; i < numParticles; i++) {
             // Create particles mostly near the surface
@@ -552,18 +565,18 @@ function initSolarPlasma() {
             const distance = sunRadius * (0.9 + Math.random() * 0.3); // Slightly beyond surface
             
             // Particle velocities follow magnetic field lines
-            const baseSpeed = 0.2 + Math.random() * 0.8;
+            const baseSpeed = 0.1 + Math.random() * 0.4; // Reduced speed
             
             particles.push({
                 x: width * 0.25 + Math.cos(angle) * distance,
                 y: height / 2 + Math.sin(angle) * distance,
                 vx: Math.cos(angle + Math.PI/2) * baseSpeed, // Initially moving along surface
                 vy: Math.sin(angle + Math.PI/2) * baseSpeed,
-                radius: 1 + Math.random() * 3,
+                radius: 0.5 + Math.random() * 1.5, // Smaller particles
                 mass: 0.5 + Math.random(),
-                temperature: 0.5 + Math.random() * 0.5, // Used for color
+                temperature: 0.3 + Math.random() * 0.3, // Lower temperature (less bright)
                 lifetime: 0,
-                maxLifetime: 100 + Math.random() * 400,
+                maxLifetime: 50 + Math.random() * 150, // Shorter lifetime
                 fieldLineIndex: Math.floor(Math.random() * 8) // Which field line it's influenced by
             });
         }
@@ -606,13 +619,183 @@ function initSolarPlasma() {
         }
     }
     
+    // Create magnetic field lines for Earth
+    function createEarthMagneticField() {
+        earthMagneticFieldLines = [];
+        const numLines = 16; // Increased from 12 to 16 lines for more detail
+        
+        for (let i = 0; i < numLines; i++) {
+            // Create field lines distributed around Earth
+            const angle = (i / numLines) * Math.PI * 2;
+            
+            // Field line strength is affected by solar wind/flares
+            const fieldStrength = flareActive ? 0.7 : 1.0; // Increased strength
+            const fieldDistortion = flareActive ? (1 - Math.cos(angle) * 0.7) : 1;
+            
+            // Field line parameters based on angle
+            const lineLength = earthRadius * 3.0 * fieldDistortion; // Increased from 2.5 to 3.0
+            
+            // Create a field line with control points for a bezier curve
+            // North pole field lines
+            if (i < numLines / 2) {
+                const polarAngle = angle;
+                earthMagneticFieldLines.push({
+                    startX: earthX + Math.cos(polarAngle) * (earthRadius * 0.9),
+                    startY: earthY + Math.sin(polarAngle) * (earthRadius * 0.9),
+                    controlPoint1X: earthX + Math.cos(polarAngle) * (earthRadius * 1.8), // Increased from 1.6
+                    controlPoint1Y: earthY + Math.sin(polarAngle) * (earthRadius * 1.8), // Increased from 1.6
+                    controlPoint2X: earthX + Math.cos(polarAngle + Math.PI) * (earthRadius * 1.8), // Increased from 1.6
+                    controlPoint2Y: earthY + Math.sin(polarAngle + Math.PI) * (earthRadius * 1.8), // Increased from 1.6
+                    endX: earthX + Math.cos(polarAngle + Math.PI) * (earthRadius * 0.9),
+                    endY: earthY + Math.sin(polarAngle + Math.PI) * (earthRadius * 0.9),
+                    strength: fieldStrength,
+                    phase: Math.random() * Math.PI * 2
+                });
+            } 
+            // Additional field lines for the side facing the sun - compressed by solar wind
+            else {
+                const solarDirection = Math.atan2(earthY - height/2, earthX - width * 0.25);
+                const compression = flareActive ? 0.4 : 0.6; // More compression (was 0.5/0.7)
+                const expansionBack = 1.5; // More expansion on the night side (was 1.2)
+                
+                // Get angle relative to sun
+                const relativeAngle = angle - solarDirection;
+                
+                // More compression on sun-facing side
+                const distortionFactor = Math.cos(relativeAngle) < 0 ? 
+                    compression + (1 - compression) * Math.abs(Math.cos(relativeAngle)) : 
+                    expansionBack;
+                
+                const lineStart = {
+                    x: earthX + Math.cos(angle) * earthRadius,
+                    y: earthY + Math.sin(angle) * earthRadius
+                };
+                
+                const lineEnd = {
+                    x: earthX + Math.cos(angle) * (earthRadius * 3.0 * distortionFactor), // Increased from 2.5 to 3.0
+                    y: earthY + Math.sin(angle) * (earthRadius * 3.0 * distortionFactor)  // Increased from 2.5 to 3.0
+                };
+                
+                earthMagneticFieldLines.push({
+                    startX: lineStart.x,
+                    startY: lineStart.y,
+                    controlPoint1X: earthX + Math.cos(angle) * (earthRadius * 1.5 * distortionFactor), // Increased from 1.3
+                    controlPoint1Y: earthY + Math.sin(angle) * (earthRadius * 1.5 * distortionFactor), // Increased from 1.3
+                    controlPoint2X: earthX + Math.cos(angle) * (earthRadius * 2.2 * distortionFactor), // Increased from 1.8
+                    controlPoint2Y: earthY + Math.sin(angle) * (earthRadius * 2.2 * distortionFactor), // Increased from 1.8
+                    endX: lineEnd.x,
+                    endY: lineEnd.y,
+                    strength: fieldStrength * 0.8, // Increased from 0.7
+                    phase: Math.random() * Math.PI * 2,
+                    isMagnetosphere: true
+                });
+            }
+        }
+    }
+    
+    // Update Earth's magnetic field lines (add some movement and respond to solar flares)
+    function updateEarthMagneticField() {
+        const time = Date.now() / 1000;
+        const sunCenterX = width * 0.25;
+        const sunCenterY = height / 2;
+        const sunToEarthAngle = Math.atan2(earthY - sunCenterY, earthX - sunCenterX);
+        
+        earthMagneticFieldLines.forEach((line, index) => {
+            // Add some subtle oscillation
+            const oscillation = Math.sin(time * 0.5 + line.phase) * 2 * simulationSpeed;
+            
+            // Different behavior for magnetosphere lines vs polar field lines
+            if (line.isMagnetosphere) {
+                // Adjust field lines based on flare presence
+                if (flareActive) {
+                    // Calculate angle between line and sun-earth line
+                    const lineAngle = Math.atan2(line.endY - earthY, line.endX - earthX);
+                    const angleDiff = Math.abs(normalizeAngle(lineAngle - sunToEarthAngle));
+                    
+                    // Lines facing sun are pushed back more
+                    const compressionFactor = angleDiff < Math.PI/2 ? 
+                        5 * (1 - angleDiff/(Math.PI/2)) * flareTime/10 * simulationSpeed : 0;
+                    
+                    // Add compression effect
+                    line.controlPoint1X += oscillation * 0.05;
+                    line.controlPoint1Y += oscillation * 0.05;
+                    line.controlPoint2X += oscillation * 0.05;
+                    line.controlPoint2Y += oscillation * 0.05;
+                    
+                    // Compress the field in direction of solar flare
+                    if (angleDiff < Math.PI/2) {
+                        const pushDirection = sunToEarthAngle + Math.PI; // Away from sun
+                        line.controlPoint1X += Math.cos(pushDirection) * compressionFactor;
+                        line.controlPoint1Y += Math.sin(pushDirection) * compressionFactor;
+                        line.controlPoint2X += Math.cos(pushDirection) * compressionFactor * 0.7;
+                        line.controlPoint2Y += Math.sin(pushDirection) * compressionFactor * 0.7;
+                        line.endX += Math.cos(pushDirection) * compressionFactor * 0.4;
+                        line.endY += Math.sin(pushDirection) * compressionFactor * 0.4;
+                    }
+                } else {
+                    // Normal oscillation when no flare
+                    line.controlPoint1X += oscillation * 0.05;
+                    line.controlPoint1Y += oscillation * 0.05;
+                    line.controlPoint2X += oscillation * 0.03;
+                    line.controlPoint2Y += oscillation * 0.03;
+                    line.endX += oscillation * 0.02;
+                    line.endY += oscillation * 0.02;
+                }
+            } else {
+                // Update polar field lines with subtle movement
+                line.controlPoint1X += oscillation * 0.05;
+                line.controlPoint1Y += oscillation * 0.05;
+                line.controlPoint2X += oscillation * 0.05;
+                line.controlPoint2Y += oscillation * 0.05;
+            }
+        });
+    }
+    
+    // Helper function to normalize angle between -PI and PI
+    function normalizeAngle(angle) {
+        return angle - Math.floor((angle + Math.PI) / (Math.PI * 2)) * Math.PI * 2;
+    }
+    
     // Trigger a solar flare
     function triggerFlare() {
         if (flareActive) return;
         
         flareActive = true;
         flareTime = 0;
-        console.log('Solar flare triggered');
+        
+        // Calculate angle from Sun to Earth for directed flare
+        const sunCenterX = width * 0.25;
+        const sunCenterY = height / 2;
+        flareAngle = Math.atan2(earthY - sunCenterY, earthX - sunCenterX);
+        
+        flareParticles = [];
+        
+        // Create flare particles traveling toward Earth
+        const numFlareParticles = 40 + Math.floor(Math.random() * 20);
+        const sunRadius = height * 0.3;
+        
+        for (let i = 0; i < numFlareParticles; i++) {
+            // Angle variation within a narrower cone directed at Earth
+            const particleAngle = flareAngle + (Math.random() - 0.5) * Math.PI * 0.15; // Narrower spread
+            const speed = (1 + Math.random() * 2) * simulationSpeed; // Apply simulation speed to initial velocity
+            
+            flareParticles.push({
+                x: sunCenterX + Math.cos(particleAngle) * sunRadius,
+                y: sunCenterY + Math.sin(particleAngle) * sunRadius,
+                vx: Math.cos(particleAngle) * speed,
+                vy: Math.sin(particleAngle) * speed,
+                size: 1 + Math.random() * 3,
+                alpha: 0.7 + Math.random() * 0.3,
+                energy: 0.8 + Math.random() * 0.2,
+                lifetime: 0,
+                maxLifetime: (100 + Math.random() * 150) / simulationSpeed // Increase lifetime to account for slower movement
+            });
+        }
+        
+        console.log('Solar flare triggered toward Earth');
+        
+        // Recreate Earth's magnetic field to show compression
+        createEarthMagneticField();
     }
     
     // Update field lines (add some movement)
@@ -621,7 +804,7 @@ function initSolarPlasma() {
         
         fieldLines.forEach((line, index) => {
             // Add some oscillation to field lines
-            const oscillation = Math.sin(time * 0.5 + line.phase) * 5;
+            const oscillation = Math.sin(time * 0.5 + line.phase) * 5 * simulationSpeed;
             
             line.controlPoint1Y += oscillation * 0.05;
             line.controlPoint2Y += oscillation * 0.03;
@@ -629,7 +812,7 @@ function initSolarPlasma() {
             
             // During flares, make field lines more chaotic
             if (flareActive) {
-                const flareEffect = Math.sin(flareTime * 0.2 + index) * (flareTime < 10 ? flareTime : 20 - flareTime);
+                const flareEffect = Math.sin(flareTime * 0.2 + index) * (flareTime < 10 ? flareTime : 20 - flareTime) * simulationSpeed;
                 
                 line.controlPoint1X += Math.sin(time + line.phase) * flareEffect * 0.3;
                 line.controlPoint1Y += Math.cos(time + line.phase) * flareEffect * 0.3;
@@ -657,7 +840,7 @@ function initSolarPlasma() {
         
         // Update flare state if active
         if (flareActive) {
-            flareTime += 0.1;
+            flareTime += 0.1 * simulationSpeed;
             if (flareTime > 20) {
                 flareActive = false;
             }
@@ -671,7 +854,7 @@ function initSolarPlasma() {
             const distanceFromCenter = Math.sqrt(dx * dx + dy * dy);
             
             // Gravitational pull towards sun (stronger when closer)
-            const gravityStrength = 0.01 * (1 + 5 / (distanceFromCenter / sunRadius));
+            const gravityStrength = 0.01 * (1 + 5 / (distanceFromCenter / sunRadius)) * simulationSpeed;
             const gravityAngle = Math.atan2(sunCenterY - particle.y, sunCenterX - particle.x);
             
             particle.vx += Math.cos(gravityAngle) * gravityStrength;
@@ -706,7 +889,7 @@ function initSolarPlasma() {
                 const distToField = Math.sqrt(toFieldX * toFieldX + toFieldY * toFieldY);
                 
                 // Apply force towards field line (stronger when close to sun)
-                const fieldStrength = 0.01 * fieldLine.strength * (sunRadius / distanceFromCenter);
+                const fieldStrength = 0.01 * fieldLine.strength * (sunRadius / distanceFromCenter) * simulationSpeed;
                 
                 if (distToField > 1) {
                     particle.vx += (toFieldX / distToField) * fieldStrength;
@@ -719,21 +902,21 @@ function initSolarPlasma() {
                 const tangentLength = Math.sqrt(tangentX * tangentX + tangentY * tangentY);
                 
                 if (tangentLength > 0) {
-                    particle.vx += (tangentX / tangentLength) * 0.01;
-                    particle.vy += (tangentY / tangentLength) * 0.01;
+                    particle.vx += (tangentX / tangentLength) * 0.01 * simulationSpeed;
+                    particle.vy += (tangentY / tangentLength) * 0.01 * simulationSpeed;
                 }
             }
             
             // During solar flares, add explosive forces
-            if (flareActive && flareTime < 10 && Math.random() < 0.1) {
+            if (flareActive && flareTime < 10 && Math.random() < 0.1 * simulationSpeed) {
                 const flareAngle = Math.random() * Math.PI - Math.PI/2;
-                const flareForce = 0.2 * (10 - flareTime) / 10;
+                const flareForce = 0.2 * (10 - flareTime) / 10 * simulationSpeed;
                 
                 particle.vx += Math.cos(flareAngle) * flareForce;
                 particle.vy += Math.sin(flareAngle) * flareForce;
                 
                 // Heat up particles during flare
-                particle.temperature = Math.min(1.0, particle.temperature + 0.01);
+                particle.temperature = Math.min(1.0, particle.temperature + 0.01 * simulationSpeed);
             }
             
             // Apply some drag/damping
@@ -741,8 +924,8 @@ function initSolarPlasma() {
             particle.vy *= 0.99;
             
             // Update position
-            particle.x += particle.vx;
-            particle.y += particle.vy;
+            particle.x += particle.vx * simulationSpeed;
+            particle.y += particle.vy * simulationSpeed;
             
             // Particles that go too far get recycled
             if (distanceFromCenter > sunRadius * 3 || particle.lifetime > particle.maxLifetime) {
@@ -750,14 +933,15 @@ function initSolarPlasma() {
                 const angle = Math.random() * Math.PI - (Math.PI / 2);
                 particle.x = sunCenterX + Math.cos(angle) * sunRadius * 0.9;
                 particle.y = sunCenterY + Math.sin(angle) * sunRadius * 0.9;
-                particle.vx = Math.cos(angle + Math.PI/2) * (0.2 + Math.random() * 0.8);
-                particle.vy = Math.sin(angle + Math.PI/2) * (0.2 + Math.random() * 0.8);
+                particle.vx = Math.cos(angle + Math.PI/2) * (0.1 + Math.random() * 0.4); // Reduced speed
+                particle.vy = Math.sin(angle + Math.PI/2) * (0.1 + Math.random() * 0.4); // Reduced speed
                 particle.lifetime = 0;
-                particle.maxLifetime = 100 + Math.random() * 400;
-                particle.temperature = 0.5 + Math.random() * 0.5;
+                particle.maxLifetime = 50 + Math.random() * 150; // Shorter lifetime
+                particle.temperature = 0.3 + Math.random() * 0.3; // Lower temperature (less bright)
+                particle.radius = 0.5 + Math.random() * 1.5; // Smaller particles
                 particle.fieldLineIndex = Math.floor(Math.random() * fieldLines.length);
             } else {
-                particle.lifetime++;
+                particle.lifetime += simulationSpeed;
             }
         });
     }
@@ -770,41 +954,124 @@ function initSolarPlasma() {
         const sunCenterY = height / 2;
         const sunRadius = height * 0.3;
         
-        // Draw background gradient
+        // Draw background gradient with more rich colors
         const bgGradient = ctx.createLinearGradient(0, 0, width, height);
-        bgGradient.addColorStop(0, '#080808');
-        bgGradient.addColorStop(1, '#101020');
+        bgGradient.addColorStop(0, '#050510');
+        bgGradient.addColorStop(0.5, '#101030');
+        bgGradient.addColorStop(1, '#151525');
         ctx.fillStyle = bgGradient;
         ctx.fillRect(0, 0, width, height);
         
-        // Draw stars in background
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
-        for (let i = 0; i < 100; i++) {
+        // Draw distant nebula for atmosphere
+        ctx.globalAlpha = 0.15;
+        for (let i = 0; i < 3; i++) {
+            const nebulaX = width * (0.3 + Math.random() * 0.6);
+            const nebulaY = height * (0.2 + Math.random() * 0.6);
+            const nebulaRadius = height * (0.1 + Math.random() * 0.3);
+            
+            const nebulaGradient = ctx.createRadialGradient(
+                nebulaX, nebulaY, 0,
+                nebulaX, nebulaY, nebulaRadius
+            );
+            
+            // Random nebula colors
+            const hue = 180 + Math.random() * 60;
+            nebulaGradient.addColorStop(0, `hsla(${hue}, 80%, 50%, 0.2)`);
+            nebulaGradient.addColorStop(1, `hsla(${hue}, 80%, 30%, 0)`);
+            
+            ctx.fillStyle = nebulaGradient;
+            ctx.beginPath();
+            ctx.arc(nebulaX, nebulaY, nebulaRadius, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        ctx.globalAlpha = 1.0;
+        
+        // Draw stars in background with virtually no movement (effectively static)
+        for (let i = 0; i < 100; i++) {  // Reduced from 150 to 100 stars
             const starX = Math.random() * width;
             const starY = Math.random() * height;
-            const starSize = Math.random() * 1.5;
+            const starSize = Math.random() * 1.5;  // Slightly smaller stars
+            
+            // Stars are now essentially fixed - divisor made extremely large
+            // This removes almost all noticeable twinkling/movement
+            const brightness = 0.5 + Math.random() * 0.2;  // Fixed brightness without sine variation
+            
+            // Avoid drawing stars too close to the sun
+            const distToSun = Math.sqrt(Math.pow(starX - sunCenterX, 2) + Math.pow(starY - sunCenterY, 2));
+            if (distToSun < sunRadius * 1.5) continue;
+            
+            // Different star colors
+            const colorValue = Math.floor(200 + Math.random() * 55);
+            ctx.fillStyle = `rgba(${colorValue}, ${colorValue}, ${255}, ${brightness})`;
             
             ctx.beginPath();
             ctx.arc(starX, starY, starSize, 0, Math.PI * 2);
             ctx.fill();
         }
         
-        // Draw faint glow around sun
+        // Draw faint glow around sun with more intense corona
         const glowGradient = ctx.createRadialGradient(
             sunCenterX, sunCenterY, sunRadius * 0.8,
-            sunCenterX, sunCenterY, sunRadius * 2
+            sunCenterX, sunCenterY, sunRadius * 2.5
         );
-        glowGradient.addColorStop(0, 'rgba(255, 200, 50, 0.3)');
-        glowGradient.addColorStop(0.5, 'rgba(255, 150, 30, 0.1)');
-        glowGradient.addColorStop(1, 'rgba(255, 100, 30, 0)');
+        glowGradient.addColorStop(0, 'rgba(255, 200, 50, 0.4)');
+        glowGradient.addColorStop(0.3, 'rgba(255, 150, 30, 0.2)');
+        glowGradient.addColorStop(0.7, 'rgba(255, 100, 30, 0.1)');
+        glowGradient.addColorStop(1, 'rgba(255, 50, 30, 0)');
         
         ctx.fillStyle = glowGradient;
         ctx.beginPath();
-        ctx.arc(sunCenterX, sunCenterY, sunRadius * 2, 0, Math.PI * 2);
+        ctx.arc(sunCenterX, sunCenterY, sunRadius * 2.5, 0, Math.PI * 2);
         ctx.fill();
         
-        // Draw magnetic field lines
-        fieldLines.forEach(line => {
+        // Draw sun with more dynamic gradient
+        const sunGradient = ctx.createRadialGradient(
+            sunCenterX - sunRadius * 0.2, sunCenterY - sunRadius * 0.2, 0,
+            sunCenterX, sunCenterY, sunRadius
+        );
+        
+        // Base sun colors
+        sunGradient.addColorStop(0, 'rgba(255, 255, 220, 1)');
+        sunGradient.addColorStop(0.5, 'rgba(255, 200, 50, 1)');
+        sunGradient.addColorStop(0.8, 'rgba(255, 140, 30, 1)');
+        sunGradient.addColorStop(1, 'rgba(200, 60, 20, 1)');
+        
+        // During flares, make sun brighter and more dramatic
+        if (flareActive) {
+            sunGradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+            sunGradient.addColorStop(0.3, 'rgba(255, 230, 150, 1)');
+            sunGradient.addColorStop(0.6, 'rgba(255, 180, 50, 1)');
+            sunGradient.addColorStop(1, 'rgba(255, 80, 30, 1)');
+        }
+        
+        ctx.fillStyle = sunGradient;
+        ctx.beginPath();
+        ctx.arc(sunCenterX, sunCenterY, sunRadius, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Draw magnetic field lines with better visibility
+        ctx.lineWidth = 1.5;
+        fieldLines.forEach((line, index) => {
+            // Gradient for field lines
+            const fieldGradient = ctx.createLinearGradient(
+                line.startX, line.startY,
+                line.endX, line.endY
+            );
+            
+            fieldGradient.addColorStop(0, 'rgba(255, 200, 100, 0.5)');
+            fieldGradient.addColorStop(0.5, 'rgba(255, 150, 100, 0.3)');
+            fieldGradient.addColorStop(1, 'rgba(255, 100, 100, 0.1)');
+            
+            // If magnetic field is strong, make lines more vibrant
+            if (magneticFieldStrength > 75) {
+                fieldGradient.addColorStop(0, 'rgba(255, 220, 150, 0.7)');
+                fieldGradient.addColorStop(1, 'rgba(255, 150, 150, 0.3)');
+            }
+            
+            ctx.strokeStyle = fieldGradient;
+            ctx.globalAlpha = 0.7 * line.strength;
+            
+            // Draw magnetic field arc
             ctx.beginPath();
             ctx.moveTo(line.startX, line.startY);
             ctx.bezierCurveTo(
@@ -812,195 +1079,416 @@ function initSolarPlasma() {
                 line.controlPoint2X, line.controlPoint2Y,
                 line.endX, line.endY
             );
-            
-            // Field line gradient and thickness based on strength
-            const fieldGradient = ctx.createLinearGradient(
-                line.startX, line.startY,
-                line.endX, line.endY
-            );
-            fieldGradient.addColorStop(0, `rgba(255, 220, 50, ${0.2 * line.strength})`);
-            fieldGradient.addColorStop(1, `rgba(255, 150, 50, ${0.05 * line.strength})`);
-            
-            ctx.strokeStyle = fieldGradient;
-            ctx.lineWidth = 2 * line.strength;
             ctx.stroke();
         });
+        ctx.globalAlpha = 1.0;
         
-        // Draw solar surface with gradient
-        const sunGradient = ctx.createRadialGradient(
-            sunCenterX, sunCenterY, 0,
-            sunCenterX, sunCenterY, sunRadius
-        );
-        sunGradient.addColorStop(0, '#ffff80');
-        sunGradient.addColorStop(0.5, '#ffbb33');
-        sunGradient.addColorStop(0.8, '#ff8800');
-        sunGradient.addColorStop(1, '#ff5500');
-        
-        ctx.fillStyle = sunGradient;
-        ctx.beginPath();
-        ctx.arc(sunCenterX, sunCenterY, sunRadius, 0, Math.PI * 2);
-        ctx.fill();
-        
-        // Draw turbulent solar surface details
-        const time = Date.now() / 1000;
-        ctx.save();
-        ctx.globalCompositeOperation = 'overlay';
-        
-        // Create a clip region for the sun's surface
-        ctx.beginPath();
-        ctx.arc(sunCenterX, sunCenterY, sunRadius, 0, Math.PI * 2);
-        ctx.clip();
-        
-        // Draw turbulent patterns
-        for (let i = 0; i < 10; i++) {
-            const angle = (i / 10) * Math.PI * 2 + time * 0.1;
-            const innerRadius = sunRadius * 0.6;
-            const outerRadius = sunRadius * 0.9;
+        // Draw solar prominences (loops extending from sun surface)
+        if (magneticFieldStrength > 30) {
+            const numProminences = Math.floor(3 + magneticFieldStrength / 20);
             
-            const x1 = sunCenterX + Math.cos(angle) * innerRadius;
-            const y1 = sunCenterY + Math.sin(angle) * innerRadius;
-            const x2 = sunCenterX + Math.cos(angle + 0.5) * outerRadius;
-            const y2 = sunCenterY + Math.sin(angle + 0.5) * outerRadius;
-            
-            const gradient = ctx.createLinearGradient(x1, y1, x2, y2);
-            gradient.addColorStop(0, 'rgba(255, 200, 0, 0.1)');
-            gradient.addColorStop(1, 'rgba(255, 100, 0, 0.2)');
-            
-            ctx.fillStyle = gradient;
+            for (let i = 0; i < numProminences; i++) {
+                const angle = (i / numProminences) * Math.PI - Math.PI/2;
+                const prominenceHeight = sunRadius * (0.3 + (magneticFieldStrength / 100) * 0.4);
+                
+                const startX = sunCenterX + Math.cos(angle - 0.1) * sunRadius;
+                const startY = sunCenterY + Math.sin(angle - 0.1) * sunRadius;
+                const peakX = sunCenterX + Math.cos(angle) * (sunRadius + prominenceHeight);
+                const peakY = sunCenterY + Math.sin(angle) * (sunRadius + prominenceHeight);
+                const endX = sunCenterX + Math.cos(angle + 0.1) * sunRadius;
+                const endY = sunCenterY + Math.sin(angle + 0.1) * sunRadius;
+                
+                // Control points for the loop
+                const ctrl1X = sunCenterX + Math.cos(angle - 0.05) * (sunRadius + prominenceHeight * 0.8);
+                const ctrl1Y = sunCenterY + Math.sin(angle - 0.05) * (sunRadius + prominenceHeight * 0.8);
+                const ctrl2X = sunCenterX + Math.cos(angle + 0.05) * (sunRadius + prominenceHeight * 0.8);
+                const ctrl2Y = sunCenterY + Math.sin(angle + 0.05) * (sunRadius + prominenceHeight * 0.8);
+                
+                // Add some randomization for dynamic effect
+                const jitter = Math.sin(Date.now() / 1000 + i * 10) * 5;
+                
+                // Draw the prominence
             ctx.beginPath();
-            ctx.arc(
-                sunCenterX + Math.cos(angle) * sunRadius * 0.5,
-                sunCenterY + Math.sin(angle) * sunRadius * 0.5,
-                sunRadius * 0.4,
-                0, Math.PI * 2
-            );
-            ctx.fill();
+                ctx.moveTo(startX, startY);
+                ctx.bezierCurveTo(
+                    ctrl1X, ctrl1Y + jitter,
+                    ctrl2X, ctrl2Y + jitter,
+                    endX, endY
+                );
+                
+                // Use a gradient for the prominence
+                const promGradient = ctx.createLinearGradient(startX, startY, peakX, peakY);
+                promGradient.addColorStop(0, 'rgba(255, 150, 50, 0.7)');
+                promGradient.addColorStop(0.5, 'rgba(255, 100, 50, 0.5)');
+                promGradient.addColorStop(1, 'rgba(255, 50, 50, 0.7)');
+                
+                ctx.strokeStyle = promGradient;
+                ctx.lineWidth = 2 + Math.random() * 2;
+                ctx.stroke();
+            }
         }
-        ctx.restore();
         
-        // Draw plasma particles with glow
-        ctx.globalCompositeOperation = 'lighter';
+        // Draw particles
         particles.forEach(particle => {
-            // Color based on temperature (yellow to white)
-            const r = 255;
-            const g = 150 + Math.floor(particle.temperature * 105);
-            const b = 50 + Math.floor(particle.temperature * 205);
+            // Particles glow based on temperature and lifetime
+            const particleOpacity = Math.min(0.4, (particle.maxLifetime - particle.lifetime) / particle.maxLifetime * 0.6); // Reduced opacity
             
-            const particleColor = `rgba(${r}, ${g}, ${b}, 0.8)`;
+            // Color based on temperature (white-yellow-orange-red)
+            let particleColor;
+            if (particle.temperature > 0.8) {
+                particleColor = `rgba(255, 255, ${Math.floor(220 * (particle.temperature - 0.8) * 5)}, ${particleOpacity})`;
+            } else if (particle.temperature > 0.6) {
+                particleColor = `rgba(255, ${Math.floor(200 + 55 * (particle.temperature - 0.6) * 5)}, 50, ${particleOpacity})`;
+            } else {
+                particleColor = `rgba(255, ${Math.floor(120 + 80 * particle.temperature)}, 30, ${particleOpacity})`;
+            }
             
-            // Create glow effect
+            // Draw glow around particle
+            const glowSize = particle.radius * (0.8 + particle.temperature); // Reduced glow size
             const glow = ctx.createRadialGradient(
                 particle.x, particle.y, 0,
-                particle.x, particle.y, particle.radius * 3
+                particle.x, particle.y, glowSize
             );
+            
             glow.addColorStop(0, particleColor);
-            glow.addColorStop(1, 'rgba(255, 200, 50, 0)');
+            glow.addColorStop(1, 'rgba(255, 100, 50, 0)');
             
             ctx.fillStyle = glow;
             ctx.beginPath();
-            ctx.arc(particle.x, particle.y, particle.radius * 3, 0, Math.PI * 2);
+            ctx.arc(particle.x, particle.y, glowSize, 0, Math.PI * 2);
             ctx.fill();
             
-            // Draw bright center
-            ctx.fillStyle = `rgba(255, 255, ${150 + Math.floor(particle.temperature * 105)}, 0.9)`;
+            // Draw particle core
+            ctx.fillStyle = particleColor;
             ctx.beginPath();
             ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
             ctx.fill();
         });
-        ctx.globalCompositeOperation = 'source-over';
         
-        // Draw solar flare if active
+        // Draw solar flare effect
         if (flareActive) {
             const flareIntensity = flareTime < 10 ? flareTime / 10 : (20 - flareTime) / 10;
-            
-            // Base angle for the flare
-            const flareAngle = -Math.PI / 4; // Up and right
-            
-            // Draw main flare body
-            ctx.strokeStyle = `rgba(255, 220, 100, ${0.7 * flareIntensity})`;
-            ctx.lineWidth = 10 * flareIntensity;
-            ctx.lineCap = 'round';
-            
-            ctx.beginPath();
-            ctx.moveTo(
-                sunCenterX + Math.cos(flareAngle) * sunRadius * 0.9,
-                sunCenterY + Math.sin(flareAngle) * sunRadius * 0.9
-            );
-            
-            // Create flare path
-            const flarePath = [];
-            const numPoints = 5;
+            const flareWidth = Math.PI * 0.15; // Narrower angular width matching the particle spread
             const flareLength = sunRadius * (1.5 + flareIntensity);
             
-            for (let i = 0; i < numPoints; i++) {
-                const t = i / (numPoints - 1);
-                const pathX = sunCenterX + Math.cos(flareAngle) * (sunRadius * 0.9 + t * flareLength);
-                const pathY = sunCenterY + Math.sin(flareAngle) * (sunRadius * 0.9 + t * flareLength);
-                
-                // Add some random variation
-                const randomOffsetX = (Math.random() - 0.5) * 30 * flareIntensity;
-                const randomOffsetY = (Math.random() - 0.5) * 30 * flareIntensity;
-                
-                flarePath.push({
-                    x: pathX + randomOffsetX,
-                    y: pathY + randomOffsetY
-                });
-                
-                ctx.lineTo(pathX + randomOffsetX, pathY + randomOffsetY);
-            }
-            
-            ctx.stroke();
-            
-            // Draw flare glow
-            ctx.globalCompositeOperation = 'lighter';
-            const flareGradient = ctx.createLinearGradient(
-                flarePath[0].x, flarePath[0].y,
-                flarePath[numPoints-1].x, flarePath[numPoints-1].y
-            );
-            flareGradient.addColorStop(0, `rgba(255, 255, 200, ${0.5 * flareIntensity})`);
-            flareGradient.addColorStop(1, `rgba(255, 200, 50, 0)`);
-            
-            ctx.strokeStyle = flareGradient;
-            ctx.lineWidth = 20 * flareIntensity;
+            // Draw the main flare cone directed toward Earth
             ctx.beginPath();
-            ctx.moveTo(flarePath[0].x, flarePath[0].y);
+            ctx.moveTo(sunCenterX, sunCenterY);
+            ctx.arc(sunCenterX, sunCenterY, sunRadius, 
+                    flareAngle - flareWidth/2, 
+                    flareAngle + flareWidth/2);
+            ctx.closePath();
             
-            for (let i = 1; i < numPoints; i++) {
-                ctx.lineTo(flarePath[i].x, flarePath[i].y);
-            }
+            const flareGradient = ctx.createRadialGradient(
+                sunCenterX, sunCenterY, sunRadius,
+                sunCenterX, sunCenterY, sunRadius + flareLength
+            );
             
-            ctx.stroke();
-            ctx.globalCompositeOperation = 'source-over';
+            flareGradient.addColorStop(0, 'rgba(255, 255, 220, 0.8)');
+            flareGradient.addColorStop(0.3, 'rgba(255, 200, 50, 0.6)');
+            flareGradient.addColorStop(0.6, 'rgba(255, 150, 50, 0.4)');
+            flareGradient.addColorStop(1, 'rgba(255, 100, 50, 0)');
             
-            // Add small plasma particles along the flare
-            for (let i = 0; i < 10 * flareIntensity; i++) {
-                const pathIndex = Math.floor(Math.random() * flarePath.length);
-                const pathPoint = flarePath[pathIndex];
-                
-                const particleX = pathPoint.x + (Math.random() - 0.5) * 40 * flareIntensity;
-                const particleY = pathPoint.y + (Math.random() - 0.5) * 40 * flareIntensity;
+            
+            ctx.fillStyle = flareGradient;
+            ctx.fill();
+            
+            // Draw flare particles
+            const numFlareParticles = 20 + flareIntensity * 30;
+            
+            for (let i = 0; i < numFlareParticles; i++) {
+                const particleAngle = flareAngle + (Math.random() - 0.5) * flareWidth;
+                const distance = sunRadius + Math.random() * flareLength;
                 const particleSize = 1 + Math.random() * 3 * flareIntensity;
                 
-                ctx.fillStyle = `rgba(255, 255, 200, ${Math.random() * 0.7 * flareIntensity})`;
+                const px = sunCenterX + Math.cos(particleAngle) * distance;
+                const py = sunCenterY + Math.sin(particleAngle) * distance;
+                
+                const particleGradient = ctx.createRadialGradient(
+                    px, py, 0,
+                    px, py, particleSize * 2
+                );
+                
+                particleGradient.addColorStop(0, 'rgba(255, 255, 200, 0.8)');
+                particleGradient.addColorStop(1, 'rgba(255, 200, 50, 0)');
+                
+                ctx.fillStyle = particleGradient;
                 ctx.beginPath();
-                ctx.arc(particleX, particleY, particleSize, 0, Math.PI * 2);
+                ctx.arc(px, py, particleSize * 2, 0, Math.PI * 2);
                 ctx.fill();
             }
         }
         
-        // Draw magnetic field strength indicator
+        // Draw Earth and its magnetic field
+        if (showEarthField) {
+            // Draw Earth's magnetosphere field lines
+            earthMagneticFieldLines.forEach((line, index) => {
+                // Create gradient for field lines
+                const fieldGradient = ctx.createLinearGradient(
+                    line.startX, line.startY, 
+                    line.endX, line.endY
+                );
+                
+                // Different colors for different types of field lines - more vivid colors
+                if (line.isMagnetosphere) {
+                    fieldGradient.addColorStop(0, 'rgba(140, 200, 255, 0.8)'); // Brighter blue and more opaque
+                    fieldGradient.addColorStop(1, 'rgba(100, 150, 255, 0.25)'); // More visible at the ends
+                } else {
+                    fieldGradient.addColorStop(0, 'rgba(120, 180, 255, 0.7)'); // Brighter and more opaque
+                    fieldGradient.addColorStop(0.5, 'rgba(90, 150, 255, 0.5)'); // More visible in the middle
+                    fieldGradient.addColorStop(1, 'rgba(120, 180, 255, 0.7)'); // Brighter and more opaque
+                }
+                
+                ctx.strokeStyle = fieldGradient;
+                ctx.lineWidth = 2.5 * line.strength; // Increased from 1.5 to 2.5
+                
+                // Draw field line
+                ctx.beginPath();
+                ctx.moveTo(line.startX, line.startY);
+                ctx.bezierCurveTo(
+                    line.controlPoint1X, line.controlPoint1Y,
+                    line.controlPoint2X, line.controlPoint2Y,
+                    line.endX, line.endY
+                );
+                ctx.stroke();
+                
+                // Add a subtle glow effect to the field lines
+                ctx.strokeStyle = 'rgba(80, 130, 255, 0.2)';
+                ctx.lineWidth = 4.0 * line.strength; // Wider for glow effect
+                ctx.beginPath();
+                ctx.moveTo(line.startX, line.startY);
+                ctx.bezierCurveTo(
+                    line.controlPoint1X, line.controlPoint1Y,
+                    line.controlPoint2X, line.controlPoint2Y,
+                    line.endX, line.endY
+                );
+                ctx.stroke();
+            });
+            
+            // Draw flare particles traveling from sun to Earth
+            flareParticles.forEach(particle => {
+                // Calculate opacity based on lifetime
+                const opacity = Math.min(1, (particle.maxLifetime - particle.lifetime) / particle.maxLifetime);
+                
+                // Gradient for particle glow
+                const particleGradient = ctx.createRadialGradient(
+                    particle.x, particle.y, 0,
+                    particle.x, particle.y, particle.size * 2
+                );
+                
+                // Color based on energy and interaction with Earth's field
+                const distanceToEarth = Math.sqrt(Math.pow(particle.x - earthX, 2) + Math.pow(particle.y - earthY, 2));
+                const earthInfluence = Math.max(0, (earthRadius * 3 - distanceToEarth) / (earthRadius * 3));
+                
+                let r = 255;
+                let g = 200 + Math.floor(particle.energy * 55);
+                let b = 100 + Math.floor(earthInfluence * 155);
+                
+                particleGradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${opacity * particle.alpha})`);
+                particleGradient.addColorStop(1, 'rgba(100, 100, 255, 0)');
+                
+                // Draw particle glow
+                ctx.fillStyle = particleGradient;
+                ctx.beginPath();
+                ctx.arc(particle.x, particle.y, particle.size * 2, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Draw particle core
+                ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity * particle.alpha})`;
+                ctx.beginPath();
+                ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Draw particle trail if in Earth's magnetic field
+                if (earthInfluence > 0.1) {
+                    ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${opacity * 0.3})`;
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.moveTo(particle.x, particle.y);
+                    ctx.lineTo(particle.x - particle.vx * 5, particle.y - particle.vy * 5);
+            ctx.stroke();
+                }
+            });
+            
+            // Draw Earth
+            // Earth atmosphere glow
+            const earthGlow = ctx.createRadialGradient(
+                earthX, earthY, earthRadius * 0.9,
+                earthX, earthY, earthRadius * 1.2
+            );
+            earthGlow.addColorStop(0, 'rgba(100, 150, 255, 0.3)');
+            earthGlow.addColorStop(1, 'rgba(70, 120, 255, 0)');
+            
+            ctx.fillStyle = earthGlow;
+            ctx.beginPath();
+            ctx.arc(earthX, earthY, earthRadius * 1.2, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Earth body
+            // Calculate the direction to the sun to determine day/night sides
+            const sunDirection = Math.atan2(sunCenterY - earthY, sunCenterX - earthX);
+            
+            // Create a gradient for day-night transition
+            const earthGradient = ctx.createRadialGradient(
+                earthX - earthRadius * 0.2, earthY - earthRadius * 0.2, 0,
+                earthX, earthY, earthRadius
+            );
+            
+            // Day side of Earth
+            earthGradient.addColorStop(0, 'rgba(70, 140, 220, 1)');
+            earthGradient.addColorStop(0.5, 'rgba(50, 120, 200, 1)');
+            earthGradient.addColorStop(0.85, 'rgba(40, 90, 180, 1)');
+            earthGradient.addColorStop(1, 'rgba(30, 70, 160, 1)');
+            
+            ctx.fillStyle = earthGradient;
+            ctx.beginPath();
+            ctx.arc(earthX, earthY, earthRadius, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Draw night side as an overlay
+            ctx.beginPath();
+            ctx.arc(earthX, earthY, earthRadius, sunDirection - Math.PI/2, sunDirection + Math.PI/2);
+            ctx.lineTo(earthX, earthY);
+            ctx.closePath();
+            
+            ctx.fillStyle = 'rgba(10, 20, 40, 0.7)';
+            ctx.fill();
+            
+            // Add some land features (continents)
+            ctx.fillStyle = 'rgba(40, 180, 100, 0.7)';
+            for (let i = 0; i < 7; i++) {
+                const continentAngle = i * (Math.PI * 2 / 7) + Date.now() / 10000; // Slow rotation
+                const continentDistance = earthRadius * 0.7;
+                const continentX = earthX + Math.cos(continentAngle) * continentDistance;
+                const continentY = earthY + Math.sin(continentAngle) * continentDistance;
+                const continentSize = earthRadius * (0.2 + Math.random() * 0.2);
+                
+                ctx.beginPath();
+                // Create irregular shape for continent
+                ctx.moveTo(continentX, continentY);
+                
+                for (let j = 0; j < 8; j++) {
+                    const angle = j * (Math.PI * 2 / 8);
+                    const radius = continentSize * (0.6 + Math.random() * 0.4);
+                    const x = continentX + Math.cos(angle) * radius;
+                    const y = continentY + Math.sin(angle) * radius;
+                    
+                    if (j === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                }
+                
+                ctx.closePath();
+                
+                // Only draw if within Earth's circle
+                ctx.save();
+                ctx.globalCompositeOperation = 'source-atop';
+                ctx.clip();
+                ctx.arc(earthX, earthY, earthRadius, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+            
+            // Add Earth glow effects
+            if (flareActive) {
+                // Aurora effect when flare is active
+                const auroraIntensity = Math.min(1, flareTime/10);
+                
+                // Draw auroras near the poles
+                for (let i = 0; i < 2; i++) {
+                    const poleY = earthY + (i === 0 ? -0.7 : 0.7) * earthRadius;
+                    
+                    const auroraGradient = ctx.createRadialGradient(
+                        earthX, poleY, earthRadius * 0.3,
+                        earthX, poleY, earthRadius * 0.7
+                    );
+                    
+                    const auroraColor = i === 0 ? 
+                        `rgba(50, 200, 100, ${0.3 * auroraIntensity})` : 
+                        `rgba(70, 150, 255, ${0.3 * auroraIntensity})`;
+                        
+                    auroraGradient.addColorStop(0, auroraColor);
+                    auroraGradient.addColorStop(1, 'rgba(50, 100, 255, 0)');
+                    
+                    ctx.fillStyle = auroraGradient;
+                ctx.beginPath();
+                    ctx.ellipse(
+                        earthX, poleY,
+                        earthRadius * 0.7, earthRadius * 0.3,
+                        0, 0, Math.PI * 2
+                    );
+                ctx.fill();
+            }
+        }
+        
+            // Add a subtle shine/reflection on top of Earth
+            const shineGradient = ctx.createRadialGradient(
+                earthX - earthRadius * 0.3, earthY - earthRadius * 0.3, 0,
+                earthX - earthRadius * 0.3, earthY - earthRadius * 0.3, earthRadius * 0.5
+            );
+            
+            shineGradient.addColorStop(0, 'rgba(255, 255, 255, 0.15)');
+            shineGradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+            
+            ctx.fillStyle = shineGradient;
+            ctx.beginPath();
+            ctx.arc(earthX, earthY, earthRadius, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        
+        // Draw Earth-Sun connection label
+        if (showEarthField) {
+            // Draw connection line
+            ctx.setLineDash([5, 5]);
+            ctx.strokeStyle = 'rgba(200, 200, 200, 0.4)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(sunCenterX + sunRadius, sunCenterY);
+            ctx.lineTo(earthX - earthRadius, earthY);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            // Add distance label
+            ctx.fillStyle = 'rgba(200, 230, 255, 0.8)';
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'center';
+            const midX = sunCenterX + (earthX - sunCenterX) * 0.6;
+            const midY = (sunCenterY + earthY) / 2 - 15;
+            ctx.fillText('~150 million km', midX, midY);
+            
+            // Add flare travel time label if flare is active
+            if (flareActive) {
+                ctx.fillStyle = 'rgba(255, 200, 100, 0.9)';
+                ctx.fillText('Solar flare travel time: ~8 minutes', midX, midY + 20);
+            }
+        }
+        
+        // Draw HUD-style magnetic field strength indicator
         const indicatorX = width - 30;
-        const indicatorY = height / 2 - 100;
-        const indicatorHeight = 200;
+        const indicatorY = 20;
         const indicatorWidth = 15;
+        const indicatorHeight = 100;
         
         // Background for indicator
-        ctx.fillStyle = 'rgba(30, 30, 50, 0.5)';
-        ctx.fillRect(indicatorX, indicatorY, indicatorWidth, indicatorHeight);
+        ctx.fillStyle = 'rgba(0, 20, 40, 0.5)';
+        ctx.fillRect(indicatorX - 5, indicatorY - 5, indicatorWidth + 10, indicatorHeight + 10);
         
         // Fill level based on magnetic field strength
         const fillHeight = indicatorHeight * (magneticFieldStrength / 100);
-        ctx.fillStyle = `rgba(100, 180, 255, 0.7)`;
+        
+        // Gradient fill for better visualization
+        const fillGradient = ctx.createLinearGradient(
+            indicatorX, indicatorY + indicatorHeight,
+            indicatorX, indicatorY
+        );
+        
+        fillGradient.addColorStop(0, 'rgba(50, 120, 255, 0.7)');
+        fillGradient.addColorStop(0.5, 'rgba(80, 160, 255, 0.7)');
+        fillGradient.addColorStop(1, 'rgba(120, 200, 255, 0.7)');
+        
+        ctx.fillStyle = fillGradient;
         ctx.fillRect(indicatorX, indicatorY + indicatorHeight - fillHeight, indicatorWidth, fillHeight);
         
         // Border for indicator
@@ -1008,22 +1496,179 @@ function initSolarPlasma() {
         ctx.lineWidth = 1;
         ctx.strokeRect(indicatorX, indicatorY, indicatorWidth, indicatorHeight);
         
+        // Draw scale markers
+        ctx.strokeStyle = 'rgba(150, 200, 255, 0.6)';
+        for (let i = 0; i <= 10; i++) {
+            const y = indicatorY + indicatorHeight * (1 - i/10);
+            const tickLength = (i % 5 === 0) ? 8 : 4;
+            
+            ctx.beginPath();
+            ctx.moveTo(indicatorX - tickLength, y);
+            ctx.lineTo(indicatorX, y);
+            ctx.stroke();
+            
+            // Add labels for major ticks
+            if (i % 5 === 0) {
+                ctx.fillStyle = 'rgba(200, 230, 255, 0.9)';
+                ctx.font = '10px Arial';
+                ctx.textAlign = 'right';
+                ctx.fillText(`${i*10}`, indicatorX - 12, y + 3);
+            }
+        }
+        
         // Labels
         ctx.fillStyle = 'rgba(200, 230, 255, 0.9)';
         ctx.font = '12px Arial';
-        ctx.textAlign = 'right';
-        ctx.fillText('Field Strength', indicatorX - 5, indicatorY - 5);
-        ctx.fillText(`${magneticFieldStrength}%`, indicatorX - 5, indicatorY + indicatorHeight + 15);
+        ctx.textAlign = 'center';
+        ctx.fillText('Field Strength', indicatorX - 40, indicatorY - 10);
+        
+        // Add current value
+        ctx.fillStyle = 'rgba(220, 255, 255, 1)';
+        ctx.font = 'bold 14px Arial';
+        ctx.fillText(`${magneticFieldStrength}%`, indicatorX - 25, indicatorY + indicatorHeight + 20);
+        
+        // Add data display for solar activity
+        ctx.fillStyle = 'rgba(0, 20, 40, 0.5)';
+        ctx.fillRect(20, 20, 180, 90);
+        ctx.strokeStyle = 'rgba(100, 180, 255, 0.6)';
+        ctx.strokeRect(20, 20, 180, 90);
+        
+        ctx.fillStyle = 'rgba(200, 230, 255, 0.9)';
+        ctx.font = '12px Arial';
+        ctx.textAlign = 'left';
+        ctx.fillText('SOLAR ACTIVITY MONITOR', 30, 40);
+        
+        ctx.font = '11px Arial';
+        ctx.fillText(`Magnetic Flux: ${Math.floor(magneticFieldStrength * 1.2)} μT`, 30, 60);
+        ctx.fillText(`Corona Temp: ${Math.floor(1.2 + magneticFieldStrength/100 * 0.8)} MK`, 30, 80);
+        
+        // Flare status indicator
+        const flareStatus = flareActive ? 'ACTIVE' : 'INACTIVE';
+        const flareColor = flareActive ? 'rgba(255, 100, 50, 1)' : 'rgba(100, 200, 100, 1)';
+        
+        ctx.fillStyle = flareColor;
+        ctx.fillText(`Flare Status: ${flareStatus}`, 30, 100);
+        
+        // Add Earth magnetic field information box if showing Earth
+        if (showEarthField) {
+            ctx.fillStyle = 'rgba(0, 20, 40, 0.5)';
+            ctx.fillRect(20, height - 110, 200, 90);
+            ctx.strokeStyle = 'rgba(100, 180, 255, 0.6)';
+            ctx.strokeRect(20, height - 110, 200, 90);
+            
+            ctx.fillStyle = 'rgba(200, 230, 255, 0.9)';
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'left';
+            ctx.fillText('EARTH MAGNETOSPHERE', 30, height - 90);
+            
+            ctx.font = '11px Arial';
+            ctx.fillText(`Field Strength: ${Math.floor(30 + Math.random() * 5)} μT`, 30, height - 70);
+            
+            // Show magnetosphere status
+            let magnetosphereStatus = 'NORMAL';
+            let statusColor = 'rgba(100, 200, 100, 1)';
+            
+            if (flareActive) {
+                const compressionLevel = Math.min(1, flareTime/10);
+                if (compressionLevel > 0.7) {
+                    magnetosphereStatus = 'HEAVILY COMPRESSED';
+                    statusColor = 'rgba(255, 50, 50, 1)';
+                } else if (compressionLevel > 0.3) {
+                    magnetosphereStatus = 'COMPRESSED';
+                    statusColor = 'rgba(255, 150, 50, 1)';
+                } else {
+                    magnetosphereStatus = 'SLIGHT COMPRESSION';
+                    statusColor = 'rgba(255, 200, 50, 1)';
+                }
+            }
+            
+            ctx.fillStyle = statusColor;
+            ctx.fillText(`Status: ${magnetosphereStatus}`, 30, height - 50);
+            
+            // Show aurora status
+            if (flareActive && flareTime > 5) {
+                ctx.fillStyle = 'rgba(100, 255, 150, 1)';
+                ctx.fillText('Aurora Activity: VISIBLE', 30, height - 30);
+            } else {
+                ctx.fillStyle = 'rgba(150, 200, 255, 1)';
+                ctx.fillText('Aurora Activity: MINIMAL', 30, height - 30);
+            }
+        }
+    }
+    
+    // Update flare particles (the ones traveling toward Earth)
+    function updateFlareParticles() {
+        if (!flareActive || flareParticles.length === 0) return;
+        
+        const particlesToRemove = [];
+        
+        flareParticles.forEach((particle, index) => {
+            // Update position
+            particle.x += particle.vx * simulationSpeed;
+            particle.y += particle.vy * simulationSpeed;
+            
+            // Calculate distance to Earth
+            const dx = particle.x - earthX;
+            const dy = particle.y - earthY;
+            const distanceToEarth = Math.sqrt(dx * dx + dy * dy);
+            
+            // Interaction with Earth's magnetic field
+            if (distanceToEarth < earthRadius * 3) {
+                // Deflection effect based on angle
+                const angleToEarth = Math.atan2(dy, dx);
+                const earthMagneticEffect = Math.max(0, (earthRadius * 3 - distanceToEarth) / (earthRadius * 3));
+                
+                // Deflect particles around Earth's magnetic field
+                const deflectionAngle = angleToEarth + Math.PI/2; // Perpendicular to Earth direction
+                
+                // Apply deflection force
+                particle.vx += Math.cos(deflectionAngle) * 0.05 * earthMagneticEffect * simulationSpeed;
+                particle.vy += Math.sin(deflectionAngle) * 0.05 * earthMagneticEffect * simulationSpeed;
+                
+                // Slow down particles in the magnetosphere
+                particle.vx *= 0.99;
+                particle.vy *= 0.99;
+                
+                // Make particles glow more in the magnetosphere
+                particle.energy = Math.min(1.0, particle.energy + 0.01 * simulationSpeed);
+            }
+            
+            // Remove particles that hit Earth or exceed lifetime
+            if (distanceToEarth < earthRadius || particle.lifetime > particle.maxLifetime) {
+                particlesToRemove.push(index);
+            }
+            
+            particle.lifetime += simulationSpeed;
+        });
+        
+        // Remove particles from array (from end to start to avoid index issues)
+        for (let i = particlesToRemove.length - 1; i >= 0; i--) {
+            flareParticles.splice(particlesToRemove[i], 1);
+        }
     }
     
     // Animation loop
-    function animate() {
+    let lastFrame = 0;
+    const frameDelay = 40; // ms between frames (25 FPS)
+    
+    function animate(timestamp) {
         if (!isRunning) return;
+        
+        // Limit frame rate for smoother slower animation
+        if (timestamp - lastFrame < frameDelay) {
+            requestAnimationFrame(animate);
+            return;
+        }
+        lastFrame = timestamp;
         
         // Only animate if canvas is visible
         if (canvas.offsetParent !== null) {
             updateFieldLines();
             updateParticles();
+            if (showEarthField) {
+                updateEarthMagneticField();
+                updateFlareParticles();
+            }
             drawSolarPlasma();
         }
         
@@ -1033,6 +1678,7 @@ function initSolarPlasma() {
     // Initialize and start
     createParticles();
     createFieldLines();
+    createEarthMagneticField();
     animate();
     
     // Return methods for external control
@@ -1060,6 +1706,9 @@ function initSolarPlasma() {
         },
         stop: function() {
             isRunning = false;
+        },
+        toggleEarthField: function() {
+            showEarthField = !showEarthField;
         }
     };
 }
