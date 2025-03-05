@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plasma Science | The Fourth State of Matter</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        /* Fix for disappearing content */
+        .card:hover {
+            animation: none !important;
+            transform: translateY(-10px);
+            box-shadow: var(--plasma-glow);
+        }
+        .resource-item:hover {
+            animation: none !important;
+            box-shadow: var(--plasma-glow);
+        }
+        .social-links a:hover {
+            animation: none !important;
+            background-color: var(--primary-color);
+            transform: translateY(-3px);
+            box-shadow: var(--plasma-glow);
+        }
+        
+        /* Canvas fixes */
+        canvas {
+            width: 100%;
+            height: 350px;
+            background-color: #030303;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="container">
+                <div class="logo">
+                    <span class="plasma-icon"><i class="fas fa-fire"></i></span>
+                    <h1>Plasma<span>Science</span></h1>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="#intro" class="active">Home</a></li>
+                    <li><a href="#what-is-plasma">What is Plasma?</a></li>
+                    <li><a href="#applications">Applications</a></li>
+                    <li><a href="#interactive">Interactive</a></li>
+                    <li><a href="#learn-more">Learn More</a></li>
+                </ul>
+                <div class="hamburger">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <section id="intro" class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h2>Discover <span class="highlight">Plasma</span></h2>
+                <h3>The Fourth State of Matter</h3>
+                <p>Beyond solid, liquid, and gas, plasma makes up 99% of the visible universe.</p>
+                <a href="#what-is-plasma" class="btn btn-primary">Learn More</a>
+            </div>
+            <div class="particle-container" id="hero-particles"></div>
+        </div>
+    </section>
+
+    <section id="what-is-plasma" class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2>What is <span class="highlight">Plasma</span>?</h2>
+                <p class="section-subtext">The energetic fourth state of matter</p>
+            </div>
+            <div class="content-columns">
+                <div class="text-column">
+                    <p>Plasma is often called the "fourth state of matter" - beyond the more familiar solid, liquid, and gas states. It occurs when a gas is heated to such high temperatures that electrons are stripped from atoms, creating a mixture of charged particles.</p>
+                    <p>Unlike ordinary gases, plasmas conduct electricity and are strongly influenced by electromagnetic fields. This gives plasma unique properties that make it fundamental to countless natural phenomena and modern technologies.</p>
+                    <p>Interestingly, plasma is the most common state of matter in the universe. Stars, including our Sun, are primarily made of plasma, and it's found throughout interstellar space.</p>
+                </div>
+                <div class="visual-column">
+                    <div class="states-of-matter">
+                        <div class="state-card">
+                            <div class="state-icon solid"></div>
+                            <h4>Solid</h4>
+                        </div>
+                        <div class="state-card">
+                            <div class="state-icon liquid"></div>
+                            <h4>Liquid</h4>
+                        </div>
+                        <div class="state-card">
+                            <div class="state-icon gas"></div>
+                            <h4>Gas</h4>
+                        </div>
+                        <div class="state-card active">
+                            <div class="state-icon plasma"></div>
+                            <h4>Plasma</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="applications" class="section alt-bg">
+        <div class="container">
+            <div class="section-header">
+                <h2>Applications of <span class="highlight">Plasma</span></h2>
+                <p class="section-subtext">How plasma technology shapes our modern world</p>
+            </div>
+            <div class="cards-container">
+                <div class="card">
+                    <div class="card-icon"><i class="fas fa-bolt"></i></div>
+                    <h3>Fusion Energy</h3>
+                    <p>Scientists are working to harness fusion reactions in plasma to create clean, virtually limitless energy that mimics the processes powering our sun.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon"><i class="fas fa-tv"></i></div>
+                    <h3>Display Technology</h3>
+                    <p>Plasma display panels (PDPs) use small cells containing plasma to illuminate phosphors, creating vibrant, high-contrast images.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon"><i class="fas fa-hospital"></i></div>
+                    <h3>Medical Applications</h3>
+                    <p>Cold atmospheric plasma is used for sterilization, wound healing, and even cancer treatment by selectively destroying harmful cells.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon"><i class="fas fa-microchip"></i></div>
+                    <h3>Semiconductor Manufacturing</h3>
+                    <p>Plasma etching and deposition are crucial in creating the intricate patterns on microchips that power our electronic devices.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon"><i class="fas fa-rocket"></i></div>
+                    <h3>Space Propulsion</h3>
+                    <p>Plasma thrusters provide efficient propulsion for satellites and spacecraft, enabling longer missions in space.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon"><i class="fas fa-trash-alt"></i></div>
+                    <h3>Waste Treatment</h3>
+                    <p>Plasma gasification converts waste into synthetic gas and other useful byproducts while destroying hazardous materials.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="interactive" class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Interactive <span class="highlight">Demonstrations</span></h2>
+                <p class="section-subtext">Experience plasma physics through simulations</p>
+            </div>
+            <div class="interactive-container">
+                <div class="demo-tabs">
+                    <button class="tab-btn active" data-demo="plasma-ball">Plasma Ball</button>
+                    <button class="tab-btn" data-demo="solar-plasma">Solar Plasma</button>
+                    <button class="tab-btn" data-demo="fusion-reactor">Fusion Reactor</button>
+                    <button class="tab-btn" data-demo="plasma-waves">Plasma Waves</button>
+                    <button class="tab-btn" data-demo="z-pinch">Z-Pinch</button>
+                    <button class="tab-btn" data-demo="cold-plasma">Cold Plasma Purification</button>
+                </div>
+                <div class="demo-container">
+                    <div class="demo active" id="plasma-ball-demo">
+                        <canvas id="plasma-ball-canvas" width="800" height="350"></canvas>
+                        <div class="demo-controls">
+                            <label>
+                                Energy Level:
+                                <input type="range" id="energy-slider" min="1" max="100" value="50">
+                            </label>
+                            <button id="touch-plasma" class="btn btn-secondary">Touch Plasma</button>
+                        </div>
+                    </div>
+                    <div class="demo" id="solar-plasma-demo">
+                        <canvas id="solar-plasma-canvas" width="800" height="350"></canvas>
+                        <div class="demo-controls">
+                            <label>
+                                Magnetic Field Strength:
+                                <input type="range" id="magnetic-slider" min="1" max="100" value="50">
+                            </label>
+                            <button id="trigger-flare" class="btn btn-secondary">Trigger Solar Flare</button>
+                        </div>
+                    </div>
+                    <div class="demo" id="fusion-reactor-demo">
+                        <canvas id="fusion-reactor-canvas" width="800" height="350"></canvas>
+                        <div class="demo-controls">
+                            <label>
+                                Temperature (million °C):
+                                <input type="range" id="temp-slider" min="1" max="150" value="50">
+                            </label>
+                            <button id="confine-plasma" class="btn btn-secondary">Confine Plasma</button>
+                        </div>
+                    </div>
+                    <div class="demo" id="plasma-waves-demo">
+                        <canvas id="plasma-waves-canvas" width="800" height="350"></canvas>
+                        <div class="demo-controls">
+                            <label>
+                                Wave Frequency:
+                                <input type="range" id="wave-slider" min="1" max="100" value="50">
+                            </label>
+                            <label>
+                                Wave Amplitude:
+                                <input type="range" id="amplitude-slider" min="1" max="100" value="70">
+                            </label>
+                            <div class="button-group">
+                                <button id="add-perturbation" class="btn btn-secondary">Add Perturbation</button>
+                                <select id="wave-type" class="wave-select">
+                                    <option value="transverse">Transverse Waves</option>
+                                    <option value="longitudinal">Longitudinal Waves</option>
+                                    <option value="spiral">Spiral Waves</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="demo" id="z-pinch-demo">
+                        <canvas id="z-pinch-canvas" width="800" height="350"></canvas>
+                        <div class="demo-controls">
+                            <label>
+                                Current Intensity:
+                                <input type="range" id="current-slider" min="1" max="100" value="50">
+                            </label>
+                            <button id="pulse-current" class="btn btn-secondary">Pulse Current</button>
+                        </div>
+                    </div>
+                    <div class="demo" id="cold-plasma-demo">
+                        <canvas id="cold-plasma-canvas" width="800" height="350"></canvas>
+                        <div class="demo-controls">
+                            <label>
+                                Discharge Intensity:
+                                <input type="range" id="discharge-slider" min="1" max="100" value="50">
+                            </label>
+                            <button id="add-contaminant" class="btn btn-secondary">Add Contaminant</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="demo-description">
+                    <h3>Plasma Ball Simulation</h3>
+                    <p>This simulation demonstrates how plasma filaments form and respond to electromagnetic fields. Adjust the energy level to see how it affects the plasma behavior, or "touch" the plasma to see how it responds to external conductors.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="learn-more" class="section alt-bg">
+        <div class="container">
+            <div class="section-header">
+                <h2>Learn <span class="highlight">More</span></h2>
+                <p class="section-subtext">Dive deeper into the fascinating world of plasma physics</p>
+            </div>
+            <div class="resources-grid">
+                <div class="resource-item">
+                    <div class="resource-icon"><i class="fas fa-book"></i></div>
+                    <h3>Books & Articles</h3>
+                    <ul>
+                        <li><a href="#" target="_blank">Introduction to Plasma Physics by Chen</a></li>
+                        <li><a href="#" target="_blank">Principles of Plasma Discharges by Lieberman</a></li>
+                        <li><a href="#" target="_blank">Plasma Universe by Peratt</a></li>
+                    </ul>
+                </div>
+                <div class="resource-item">
+                    <div class="resource-icon"><i class="fas fa-video"></i></div>
+                    <h3>Videos & Lectures</h3>
+                    <ul>
+                        <li><a href="#" target="_blank">Plasma - The Fundamental State of Matter</a></li>
+                        <li><a href="#" target="_blank">How Plasma Powers the Universe</a></li>
+                        <li><a href="#" target="_blank">The Promise of Fusion Energy</a></li>
+                    </ul>
+                </div>
+                <div class="resource-item">
+                    <div class="resource-icon"><i class="fas fa-flask"></i></div>
+                    <h3>Research Centers</h3>
+                    <ul>
+                        <li><a href="#" target="_blank">Princeton Plasma Physics Laboratory</a></li>
+                        <li><a href="#" target="_blank">ITER International Fusion Project</a></li>
+                        <li><a href="#" target="_blank">Max Planck Institute for Plasma Physics</a></li>
+                    </ul>
+                </div>
+                <div class="resource-item">
+                    <div class="resource-icon"><i class="fas fa-microscope"></i></div>
+                    <h3>Online Courses</h3>
+                    <ul>
+                        <li><a href="#" target="_blank">Introduction to Plasma Physics (MIT OpenCourseWare)</a></li>
+                        <li><a href="#" target="_blank">Physics of Plasmas (Coursera)</a></li>
+                        <li><a href="#" target="_blank">Plasma Technology Applications (edX)</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <span class="plasma-icon"><i class="fas fa-fire"></i></span>
+                    <h2>Plasma<span>Science</span></h2>
+                </div>
+                <p class="footer-tagline">Exploring the fourth state of matter</p>
+                <div class="social-links">
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 PlasmaScience. All rights reserved.</p>
+                <p>Created for educational purposes.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+    <script src="js/plasma-simulation.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize demo tabs
+            const demoTabs = document.querySelectorAll('.tab-btn');
+            const demos = document.querySelectorAll('.demo');
+            
+            // Click handler for demo tabs
+            demoTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Get the demo ID from the tab's data-demo attribute
+                    const demoId = this.getAttribute('data-demo');
+                    
+                    // Remove active class from all tabs and demos
+                    demoTabs.forEach(t => t.classList.remove('active'));
+                    demos.forEach(d => d.classList.remove('active'));
+                    
+                    // Add active class to clicked tab and corresponding demo
+                    this.classList.add('active');
+                    document.getElementById(demoId + '-demo').classList.add('active');
+                    
+                    // Update the demo description
+                    updateDemoDescription(demoId);
+                    
+                    // Redraw the simulation if it exists
+                    if (demoId === 'cold-plasma' && window.plasmaSimulations && window.plasmaSimulations.coldPlasma) {
+                        console.log('Redrawing Cold Plasma simulation');
+                        window.plasmaSimulations.coldPlasma.redraw();
+                    } 
+                    else if (demoId === 'fusion-reactor' && window.plasmaSimulations && window.plasmaSimulations.fusionReactor) {
+                        console.log('Redrawing Fusion Reactor simulation');
+                        window.plasmaSimulations.fusionReactor.redraw();
+                    }
+                    else if (demoId === 'plasma-waves' && window.plasmaSimulations && window.plasmaSimulations.plasmaWaves) {
+                        console.log('Redrawing Plasma Waves simulation');
+                        window.plasmaSimulations.plasmaWaves.redraw();
+                    }
+                    else if (demoId === 'z-pinch' && window.plasmaSimulations && window.plasmaSimulations.zPinch) {
+                        console.log('Redrawing Z-Pinch simulation');
+                        window.plasmaSimulations.zPinch.redraw();
+                    }
+                    else if (demoId === 'solar-plasma' && window.plasmaSimulations && window.plasmaSimulations.solarPlasma) {
+                        console.log('Redrawing Solar Plasma simulation');
+                        window.plasmaSimulations.solarPlasma.redraw();
+                    }
+                    else if (demoId === 'plasma-ball' && window.plasmaSimulations && window.plasmaSimulations.plasmaBall) {
+                        console.log('Redrawing Plasma Ball simulation');
+                        window.plasmaSimulations.plasmaBall.redraw();
+                    }
+                });
+            });
+            
+            // Function to update demo description
+            function updateDemoDescription(demoId) {
+                const descriptions = {
+                    'plasma-ball': {
+                        title: 'Plasma Ball Simulation',
+                        text: 'This simulation demonstrates how plasma filaments form and respond to electromagnetic fields. Adjust the energy level to see how it affects the plasma behavior, or "touch" the plasma to see how it responds to external conductors.'
+                    },
+                    'cold-plasma': {
+                        title: 'Cold Plasma Air Purification',
+                        text: 'This simulation demonstrates how cold plasma technology can be used for air purification. The discharge between electrodes creates reactive particles that break down contaminants. Adjust the discharge intensity with the slider and add contaminants to see the purification in action.'
+                    },
+                    'fusion-reactor': {
+                        title: 'Fusion Reactor',
+                        text: 'This simulation shows a simplified tokamak fusion reactor. The plasma particles are confined by magnetic fields and heated to extreme temperatures to facilitate fusion. Use the temperature slider to control the plasma temperature and the confinement button to activate magnetic confinement.'
+                    },
+                    'z-pinch': {
+                        title: 'Z-Pinch Plasma Compression',
+                        text: 'The Z-Pinch is a type of plasma confinement system where an electrical current produces a magnetic field that compresses the plasma. Adjust the current intensity and use the pulse button to see the pinch effect in action as the plasma column is compressed.'
+                    },
+                    'plasma-waves': {
+                        title: 'Plasma Waves Simulation',
+                        text: 'Explore different types of plasma waves and their behavior. You can adjust the wave frequency, amplitude, and select between different wave types. Click directly on the canvas or use the "Add Perturbation" button to create ripple effects and see how the plasma responds to disturbances.'
+                    },
+                    'solar-plasma': {
+                        title: 'Solar Plasma & Magnetic Fields',
+                        text: 'This simulation demonstrates how plasma behaves in the Sun\'s atmosphere under the influence of magnetic fields. Adjust the magnetic field strength to see how it affects plasma movement and use the "Trigger Flare" button to simulate a solar flare eruption.'
+                    }
+                };
+                
+                const description = descriptions[demoId] || { title: 'Plasma Demo', text: 'Interactive plasma physics demonstration.' };
+                const demoTitle = document.querySelector('.demo-description h3');
+                const demoText = document.querySelector('.demo-description p');
+                
+                if (demoTitle) demoTitle.innerText = description.title;
+                if (demoText) demoText.innerText = description.text;
+            }
+            
+            // Function to test all demos in sequence (for debugging)
+            function testAllDemos() {
+                const tabs = Array.from(demoTabs);
+                let currentIndex = 0;
+                
+                function clickNextTab() {
+                    if (currentIndex < tabs.length) {
+                        console.log(`Testing demo: ${tabs[currentIndex].getAttribute('data-demo')}`);
+                        tabs[currentIndex].click();
+                        currentIndex++;
+                        setTimeout(clickNextTab, 3000); // Wait 3 seconds between tabs
+                    }
+                }
+                
+                clickNextTab();
+            }
+            // Uncomment to test all demos
+            // testAllDemos();
+            
+            // Show plasma waves demo by default (after a short delay to ensure scripts are loaded)
+            setTimeout(() => {
+                // Click the plasma-waves demo tab to ensure it's visible on load
+                const plasmaWavesTab = document.querySelector('.tab-btn[data-demo="plasma-waves"]');
+                if (plasmaWavesTab) {
+                    console.log("Activating Plasma Waves simulation");
+                    plasmaWavesTab.click();
+                } else {
+                    console.error("Could not find Plasma Waves tab");
+                    // Fallback to first tab
+                    const firstTab = document.querySelector('.tab-btn');
+                    if (firstTab) firstTab.click();
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+</html> 
